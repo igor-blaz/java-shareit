@@ -10,6 +10,7 @@ public class MapperDto {
 
     public UserDto userDtoConverter(User user) {
         UserDto userDto = new UserDto(
+                user.getId(),
                 user.getName(),
                 user.getEmail()
         );
