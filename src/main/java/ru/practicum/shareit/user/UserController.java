@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDtoMapper;
 
 /**
  * TODO Sprint add-controllers.
@@ -14,11 +15,12 @@ import ru.practicum.shareit.user.dto.UserDto;
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
-
+    private final UserDtoMapper userDtoMapper;
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody User user) {
+    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+        User user = userDtoMapper.userDtoConverter(userDto);
         log.info("Запрос на добавление User {}", user);
         return userService.addUser(user);
     }
@@ -32,8 +34,9 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto patchUser(@PathVariable long userId,
-                             @RequestBody User user) {
-        log.info("ПАТЧ {}", user);
+                             @RequestBody UserDto userDto) {
+        log.info("ПАТЧ {}", userDto);
+        User user = userDtoMapper.userDtoConverter(userDto);
         return userService.patchUser(userId, user);
     }
 

@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.User;
 
 @Slf4j
 @Component
-public class MapperDto {
+public class UserMapper {
 
     public UserDto userDtoConverter(User user) {
         UserDto userDto = new UserDto(
