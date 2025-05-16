@@ -31,6 +31,10 @@ public class UserService {
     public void deleteUser(long id) {
         userStorage.deleteUser(id);
     }
+    public User getUser(Long id){
+        return userStorage.getUserById(id);
+    }
+
 
 
     public UserDto patchUser(long id, User enhansedUser) {

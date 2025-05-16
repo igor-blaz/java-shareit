@@ -33,10 +33,10 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto patchItem(@PathVariable long itemId,
                              @RequestBody ItemDto itemDto,
-                             @RequestHeader("X-Sharer-User-Id") Long xSharer) {
+                             @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("ПАТЧ {}", itemDto);
         Item item = mapper.dtoToModel(itemDto);
-        return itemService.patchItem(itemId, item, xSharer );
+        return itemService.patchItem(itemId, item, userId );
     }
 
 

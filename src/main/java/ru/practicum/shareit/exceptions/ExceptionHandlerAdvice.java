@@ -21,7 +21,7 @@ public class ExceptionHandlerAdvice {
         return new ErrorResponse(e.getMessage(), "Ошибка");
     }
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleIllegalAccessDeniedException(AccessDeniedException e) {
         return new ErrorResponse(e.getMessage(), "Ошибка");
     }

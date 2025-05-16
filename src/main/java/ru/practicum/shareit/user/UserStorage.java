@@ -26,6 +26,7 @@ public class UserStorage {
         return user;
     }
 
+
     public void isUserOwnerOfThisEmail(String email, long id) {
         User user = getUser(id);
         if (!user.getEmail().equals(email)) {

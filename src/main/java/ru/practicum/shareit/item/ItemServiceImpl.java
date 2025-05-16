@@ -8,8 +8,8 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 @Service
@@ -24,19 +24,20 @@ public class ItemServiceImpl {
 
     public ItemDto addItem(Item item, Long userId) {
         userService.isRealUserId(userId);
-        ItemRequest request = itemRequestService.createRequest(userId);
-        item.setRequest(request);
+        User user = userService.getUser(userId);
+        item.setOwner(user);
         itemStorage.addItem(item);
+        log.info("создана вещь {}", item);
         return mapper.modelToDto(item);
     }
 
-    public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long xSharer){
+    public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId) {
 
         Item item = itemStorage.getItem(oldItemId);
         patchName(item, enhansedItem);
         patchDescription(item, enhansedItem);
         patchAvailable(item, enhansedItem);
-        xSharerValidation(xSharer, enhansedItem.getOwner().getId());
+        xSharerValidation(userId, item);
         return mapper.modelToDto(item);
     }
 
@@ -59,12 +60,14 @@ public class ItemServiceImpl {
         }
     }
 
-    private void xSharerValidation(Long xSharer, Long userId){
-        if (xSharer == null) {
+    private void xSharerValidation(Long userId, Item item) {
+        if (userId == null) {
             throw new NotFoundException("Не задан заголовок sSharer");
-        } else if (!userId.equals(xSharer)) {
-            log.info("XSHARER{}",xSharer);
-            log.info("old{}",userId);
+        } else if (item.getOwner() == null) {
+            throw new NotFoundException("Пользователь не существует ");
+        } else if (!userId.equals(item.getOwner().getId())) {
+            log.info("XSHARER{}", item.getOwner().getId());
+            log.info("old{}", userId);
 
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");
         }
