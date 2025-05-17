@@ -8,6 +8,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -36,13 +39,29 @@ public class ItemController {
                              @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("ПАТЧ {}", itemDto);
         Item item = mapper.dtoToModel(itemDto);
-        return itemService.patchItem(itemId, item, userId );
-    }
-    @GetMapping("/{itemId}")
-    public void getItemByUserId(@PathVariable long itemId){
-        log.info("Зпрос на получение вещей");
+        return itemService.patchItem(itemId, item, userId);
     }
 
+    @GetMapping("/{itemId}")
+    public ItemDto getItemByUserId(@PathVariable long itemId) {
+        log.info("Зпрос на получение вещей");
+        return itemService.getItem(itemId);
+    }
+
+    @GetMapping
+    public List<ItemDto> getAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Зпрос на получение вещей у юзера {}", userId);
+        return itemService.getItemsFromUser(userId);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> getBySearch(@RequestParam String text) {
+        if (text.isBlank()) {
+            log.info("IS BLAAAAAAAANK");
+            return Collections.emptyList();
+        }
+        return itemService.getBySearch(text);
+    }
 
 
 }

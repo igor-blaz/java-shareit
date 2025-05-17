@@ -12,6 +12,8 @@ import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -29,6 +31,20 @@ public class ItemServiceImpl {
         itemStorage.addItem(item);
         log.info("создана вещь {}", item);
         return mapper.modelToDto(item);
+    }
+
+    public List<ItemDto> getBySearch(String text) {
+        List<Item> items = itemStorage.getBySearch(text);
+        return mapper.modelArrayToDto(items);
+    }
+
+    public ItemDto getItem(Long id) {
+        return mapper.modelToDto(itemStorage.getItem(id));
+    }
+
+    public List<ItemDto> getItemsFromUser(Long userId) {
+        List<Item> items = itemStorage.getItemsFromUser(userId);
+        return mapper.modelArrayToDto(items);
     }
 
     public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId) {
@@ -71,6 +87,11 @@ public class ItemServiceImpl {
 
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");
         }
+    }
+
+    public List<ItemDto> getAll() {
+        List<Item>items =  itemStorage.getAll();
+        return mapper.modelArrayToDto(items);
     }
 
 }
