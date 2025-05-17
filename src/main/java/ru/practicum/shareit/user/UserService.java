@@ -4,8 +4,8 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 @Slf4j
 @Service
@@ -19,7 +19,8 @@ public class UserService {
         userStorage.addUser(user);
         return userMapper.userDtoConverter(user);
     }
-    public void isRealUserId(long id){
+
+    public void isRealUserId(long id) {
         userStorage.isRealId(id);
     }
 
@@ -31,10 +32,10 @@ public class UserService {
     public void deleteUser(long id) {
         userStorage.deleteUser(id);
     }
-    public User getUser(Long id){
+
+    public User getUser(Long id) {
         return userStorage.getUserById(id);
     }
-
 
 
     public UserDto patchUser(long id, User enhansedUser) {

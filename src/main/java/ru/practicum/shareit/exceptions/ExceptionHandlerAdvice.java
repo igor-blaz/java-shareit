@@ -20,6 +20,7 @@ public class ExceptionHandlerAdvice {
     public ErrorResponse handleNotFoundException(NotFoundException e) {
         return new ErrorResponse(e.getMessage(), "Ошибка");
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleIllegalAccessDeniedException(AccessDeniedException e) {

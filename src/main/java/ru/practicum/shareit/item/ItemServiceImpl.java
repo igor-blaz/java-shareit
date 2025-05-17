@@ -17,13 +17,14 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class ItemServiceImpl {
+public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final ItemMapper mapper;
     private final ItemRequestService itemRequestService;
     private final UserService userService;
 
+    @Override
     public ItemDto addItem(Item item, Long userId) {
         userService.isRealUserId(userId);
         User user = userService.getUser(userId);
@@ -37,7 +38,7 @@ public class ItemServiceImpl {
         List<Item> items = itemStorage.getBySearch(text);
         return mapper.modelArrayToDto(items);
     }
-
+    @Override
     public ItemDto getItem(Long id) {
         return mapper.modelToDto(itemStorage.getItem(id));
     }
@@ -46,7 +47,7 @@ public class ItemServiceImpl {
         List<Item> items = itemStorage.getItemsFromUser(userId);
         return mapper.modelArrayToDto(items);
     }
-
+    @Override
     public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId) {
 
         Item item = itemStorage.getItem(oldItemId);
@@ -90,7 +91,7 @@ public class ItemServiceImpl {
     }
 
     public List<ItemDto> getAll() {
-        List<Item>items =  itemStorage.getAll();
+        List<Item> items = itemStorage.getAll();
         return mapper.modelArrayToDto(items);
     }
 

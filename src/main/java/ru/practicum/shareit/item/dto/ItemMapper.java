@@ -10,15 +10,11 @@ import java.util.List;
 @Slf4j
 @Component
 public class ItemMapper {
-
-
     public Item dtoToModel(ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-
-
         return item;
     }
 

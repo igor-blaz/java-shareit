@@ -56,11 +56,12 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getBySearch(@RequestParam String text) {
+        log.info("поиск по тексту {}", text);
         if (text.isBlank()) {
             log.info("IS BLAAAAAAAANK");
             return Collections.emptyList();
         }
-        return itemService.getBySearch(text);
+        return itemService.getBySearch(text.toLowerCase());
     }
 
 

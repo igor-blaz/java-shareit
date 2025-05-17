@@ -15,9 +15,7 @@ import ru.practicum.shareit.user.User;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-
 public class Item {
-
     private long id;
     @NotNull
     @NotBlank
@@ -28,5 +26,4 @@ public class Item {
     private Boolean available;
     private User owner;
     private ItemRequest request;
-
 }

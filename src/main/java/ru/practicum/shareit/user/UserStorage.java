@@ -14,9 +14,7 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class UserStorage {
-
     private final Set<User> users = new HashSet<>();
-
 
     public User addUser(User user) {
         isUniqueEmail(user.getEmail());
@@ -24,14 +22,6 @@ public class UserStorage {
         user.setId(id);
         users.add(user);
         return user;
-    }
-
-
-    public void isUserOwnerOfThisEmail(String email, long id) {
-        User user = getUser(id);
-        if (!user.getEmail().equals(email)) {
-            throw new NotFoundException("Email " + email + "уже занят");
-        }
     }
 
     public void deleteUser(long id) {

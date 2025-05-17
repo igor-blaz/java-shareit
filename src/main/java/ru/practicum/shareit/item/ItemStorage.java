@@ -21,7 +21,8 @@ public class ItemStorage {
         items.put(item.getId(), item);
         return item;
     }
-    public List<Item>getAll(){
+
+    public List<Item> getAll() {
         return items.values().stream().toList();
     }
 
@@ -44,19 +45,24 @@ public class ItemStorage {
         List<Item> items = new ArrayList<>();
         items.addAll(checkName(text));
         items.addAll(checkDescription(text));
+        log.info("Все, что добавилось {}", items);
         return items;
     }
 
     public List<Item> checkName(String text) {
         log.info("VALUES!!!  {}", items.values());
         return items.values().stream()
-                .filter(item -> item.getName() != null && item.getName().contains(text))
+                .filter(item -> item.getName() != null &&
+                        item.getName().toLowerCase().contains(text) &&
+                        item.getAvailable())
                 .toList();
     }
 
     public List<Item> checkDescription(String text) {
         return items.values().stream()
-                .filter(item -> item.getDescription() != null && item.getDescription().contains(text))
+                .filter(item -> item.getDescription() != null &&
+                        item.getDescription().toLowerCase().contains(text) &&
+                        item.getAvailable())
                 .toList();
     }
 
