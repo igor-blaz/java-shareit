@@ -38,6 +38,11 @@ public class ItemController {
         Item item = mapper.dtoToModel(itemDto);
         return itemService.patchItem(itemId, item, userId );
     }
+    @GetMapping("/{itemId}")
+    public void getItemByUserId(@PathVariable long itemId){
+        log.info("Зпрос на получение вещей");
+    }
+
 
 
 }
