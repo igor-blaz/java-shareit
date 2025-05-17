@@ -38,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemStorage.getBySearch(text);
         return mapper.modelArrayToDto(items);
     }
+
     @Override
     public ItemDto getItem(Long id) {
         return mapper.modelToDto(itemStorage.getItem(id));
@@ -47,6 +48,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemStorage.getItemsFromUser(userId);
         return mapper.modelArrayToDto(items);
     }
+
     @Override
     public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId) {
 
