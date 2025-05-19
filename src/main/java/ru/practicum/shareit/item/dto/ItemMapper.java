@@ -1,16 +1,14 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 
-@Slf4j
-@Component
+@UtilityClass
 public class ItemMapper {
-    public Item dtoToModel(ItemDto itemDto) {
+    public static Item dtoToModel(ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
@@ -18,11 +16,11 @@ public class ItemMapper {
         return item;
     }
 
-    public List<ItemDto> modelArrayToDto(List<Item> items) {
-        return items.stream().map(this::modelToDto).toList();
+    public static List<ItemDto> modelArrayToDto(List<Item> items) {
+        return items.stream().map(ItemMapper::modelToDto).toList();
     }
 
-    public ItemDto modelToDto(Item item) {
+    public static ItemDto modelToDto(Item item) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),

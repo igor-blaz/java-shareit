@@ -4,6 +4,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
@@ -13,20 +14,18 @@ import ru.practicum.shareit.user.dto.UserMapper;
 public class UserService {
 
     private final UserStorage userStorage;
-    private final UserMapper userMapper;
 
     public UserDto addUser(User user) {
         userStorage.addUser(user);
-        return userMapper.userDtoConverter(user);
-    }
-
-    public void isRealUserId(long id) {
-        userStorage.isRealId(id);
+        return UserMapper.userDtoConverter(user);
     }
 
     public UserDto getUserDto(long id) {
         User user = userStorage.getUserById(id);
-        return userMapper.userDtoConverter(user);
+        if (user == null) {
+            throw new NotFoundException("User with id=" + id + " not found");
+        }
+        return UserMapper.userDtoConverter(user);
     }
 
     public void deleteUser(long id) {
@@ -34,21 +33,26 @@ public class UserService {
     }
 
     public User getUser(Long id) {
-        return userStorage.getUserById(id);
+        User user = userStorage.getUserById(id);
+        if (user == null) {
+            throw new NotFoundException("User with id=" + id + " not found");
+        }
+        return user;
     }
 
 
-    public UserDto patchUser(long id, User enhansedUser) {
-
+    public UserDto updateUser(long id, User enhansedUser) {
         User user = userStorage.getUser(id);
+        if (user == null) {
+            throw new NotFoundException("User with id=" + id + " not found");
+        }
         log.info("enhansedUser - {}", enhansedUser);
-        // userStorage.isUserOwnerOfThisEmail(enhansedUser.getEmail(), id);
-        patchEmail(user, enhansedUser);
-        patchName(user, enhansedUser);
-        return userMapper.userDtoConverter(user);
+        updateEmail(user, enhansedUser);
+        updateName(user, enhansedUser);
+        return UserMapper.userDtoConverter(user);
     }
 
-    private void patchName(User user, User enhansedUser) {
+    private void updateName(User user, User enhansedUser) {
         if (enhansedUser.getName() == null) {
             return;
         }
@@ -57,7 +61,7 @@ public class UserService {
         }
     }
 
-    private void patchEmail(User user, User enhansedUser) {
+    private void updateEmail(User user, User enhansedUser) {
         if (enhansedUser.getEmail() == null) {
             return;
         }

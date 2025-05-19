@@ -8,5 +8,5 @@ public interface ItemService {
 
     ItemDto getItem(Long id);
 
-    ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId);
+    ItemDto updateItem(Long oldItemId, Item enhansedItem, Long userId);
 }

@@ -4,28 +4,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicateEmailException;
-import ru.practicum.shareit.exceptions.NotFoundException;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class UserStorage {
-    private final Set<User> users = new HashSet<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     public User addUser(User user) {
         isUniqueEmail(user.getEmail());
         long id = users.size();
         user.setId(id);
-        users.add(user);
+        users.put(user.getId(), user);
         return user;
     }
 
     public void deleteUser(long id) {
-        users.removeIf(user -> user.getId() == id);
+        users.remove(id);
     }
 
     public User getUserById(long id) {
@@ -34,7 +32,7 @@ public class UserStorage {
     }
 
     public void isUniqueEmail(String newEmail) {
-        boolean notUnique = users.stream()
+        boolean notUnique = users.values().stream()
                 .map(User::getEmail)
                 .anyMatch(email -> email.equals(newEmail));
         if (notUnique) {
@@ -44,22 +42,7 @@ public class UserStorage {
     }
 
     public User getUser(long id) {
-        Optional<User> userOptional = users.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst();
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        } else {
-            throw new NotFoundException("Пользователя с id " + id + "не существует");
-        }
+        return users.get(id);
     }
-
-    public void isRealId(long id) {
-        boolean isReal = users.stream().map(User::getId).anyMatch(anyId -> anyId == id);
-        if (!isReal) {
-            throw new NotFoundException("Пользователя с id" + id + "не существует");
-        }
-    }
-
 
 }

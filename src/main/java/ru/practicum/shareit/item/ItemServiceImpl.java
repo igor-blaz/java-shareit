@@ -20,60 +20,64 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
-    private final ItemMapper mapper;
     private final ItemRequestService itemRequestService;
     private final UserService userService;
 
     @Override
     public ItemDto addItem(Item item, Long userId) {
-        userService.isRealUserId(userId);
         User user = userService.getUser(userId);
+        if (user == null) {
+            throw new NotFoundException("User with id=" + userId + " not found");
+        }
         item.setOwner(user);
         itemStorage.addItem(item);
         log.info("создана вещь {}", item);
-        return mapper.modelToDto(item);
+        return ItemMapper.modelToDto(item);
     }
 
-    public List<ItemDto> getBySearch(String text) {
-        List<Item> items = itemStorage.getBySearch(text);
-        return mapper.modelArrayToDto(items);
+    public List<ItemDto> searchByText(String text) {
+        List<Item> items = itemStorage.searchByText(text);
+        return ItemMapper.modelArrayToDto(items);
     }
 
     @Override
     public ItemDto getItem(Long id) {
-        return mapper.modelToDto(itemStorage.getItem(id));
+        return ItemMapper.modelToDto(itemStorage.getItem(id));
     }
 
     public List<ItemDto> getItemsFromUser(Long userId) {
         List<Item> items = itemStorage.getItemsFromUser(userId);
-        return mapper.modelArrayToDto(items);
+        return ItemMapper.modelArrayToDto(items);
     }
 
     @Override
-    public ItemDto patchItem(Long oldItemId, Item enhansedItem, Long userId) {
+    public ItemDto updateItem(Long oldItemId, Item enhansedItem, Long userId) {
 
         Item item = itemStorage.getItem(oldItemId);
-        patchName(item, enhansedItem);
-        patchDescription(item, enhansedItem);
-        patchAvailable(item, enhansedItem);
+        if (item == null) {
+            throw new NotFoundException("Item with id=" + oldItemId + " not found");
+        }
+        updateName(item, enhansedItem);
+        updateDescription(item, enhansedItem);
+        updateAvailable(item, enhansedItem);
         xSharerValidation(userId, item);
-        return mapper.modelToDto(item);
+        return ItemMapper.modelToDto(item);
     }
 
-    private void patchName(Item item, Item enhansedItem) {
+    private void updateName(Item item, Item enhansedItem) {
 
         if (!item.getName().equals(enhansedItem.getName())) {
             item.setName(enhansedItem.getName());
         }
     }
 
-    private void patchDescription(Item item, Item enhansedItem) {
+    private void updateDescription(Item item, Item enhansedItem) {
         if (!item.getDescription().equals(enhansedItem.getDescription())) {
             item.setDescription(enhansedItem.getDescription());
         }
     }
 
-    private void patchAvailable(Item item, Item enhansedItem) {
+    private void updateAvailable(Item item, Item enhansedItem) {
         if (!item.getAvailable().equals(enhansedItem.getAvailable())) {
             item.setAvailable(enhansedItem.getAvailable());
         }
@@ -90,11 +94,6 @@ public class ItemServiceImpl implements ItemService {
 
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");
         }
-    }
-
-    public List<ItemDto> getAll() {
-        List<Item> items = itemStorage.getAll();
-        return mapper.modelArrayToDto(items);
     }
 
 }

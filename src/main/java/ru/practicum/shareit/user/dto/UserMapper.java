@@ -1,20 +1,23 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.User;
 
-@Slf4j
-@Component
+@UtilityClass
 public class UserMapper {
 
-    public UserDto userDtoConverter(User user) {
-        UserDto userDto = new UserDto(
+    public static UserDto userDtoConverter(User user) {
+        return new UserDto(
                 user.getId(),
                 user.getName(),
                 user.getEmail()
         );
-        log.info("Mapper {}", userDto);
-        return userDto;
+    }
+
+    public static User userDtoConverter(UserDto userDto) {
+        return new User(
+                userDto.getId(),
+                userDto.getName(),
+                userDto.getEmail());
     }
 }

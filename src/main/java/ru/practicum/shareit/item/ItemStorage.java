@@ -22,9 +22,6 @@ public class ItemStorage {
         return item;
     }
 
-    public List<Item> getAll() {
-        return items.values().stream().toList();
-    }
 
     public Item getItem(long id) {
         return items.get(id);
@@ -40,7 +37,7 @@ public class ItemStorage {
         ).toList();
     }
 
-    public List<Item> getBySearch(String text) {
+    public List<Item> searchByText(String text) {
 
         List<Item> items = new ArrayList<>();
         items.addAll(checkName(text));
@@ -53,7 +50,7 @@ public class ItemStorage {
         log.info("VALUES!!!  {}", items.values());
         return items.values().stream()
                 .filter(item -> item.getName() != null &&
-                        item.getName().toLowerCase().contains(text) &&
+                        item.getName().toLowerCase().contains(text.toLowerCase()) &&
                         item.getAvailable())
                 .toList();
     }
@@ -61,7 +58,7 @@ public class ItemStorage {
     public List<Item> checkDescription(String text) {
         return items.values().stream()
                 .filter(item -> item.getDescription() != null &&
-                        item.getDescription().toLowerCase().contains(text) &&
+                        item.getDescription().toLowerCase().contains(text.toLowerCase()) &&
                         item.getAvailable())
                 .toList();
     }

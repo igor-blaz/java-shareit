@@ -21,7 +21,6 @@ import java.util.List;
 public class ItemController {
 
     private final ItemServiceImpl itemService;
-    private final ItemMapper mapper;
 
     @PostMapping
     public ItemDto createItem(
@@ -29,17 +28,17 @@ public class ItemController {
             @Valid @RequestBody ItemDto itemDto
     ) {
         log.info("Запрос на создание Item {}", itemDto);
-        Item item = mapper.dtoToModel(itemDto);
+        Item item = ItemMapper.dtoToModel(itemDto);
         return itemService.addItem(item, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto patchItem(@PathVariable long itemId,
-                             @RequestBody ItemDto itemDto,
-                             @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDto updateItem(@PathVariable long itemId,
+                              @RequestBody ItemDto itemDto,
+                              @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("ПАТЧ {}", itemDto);
-        Item item = mapper.dtoToModel(itemDto);
-        return itemService.patchItem(itemId, item, userId);
+        Item item = ItemMapper.dtoToModel(itemDto);
+        return itemService.updateItem(itemId, item, userId);
     }
 
     @GetMapping("/{itemId}")
@@ -55,13 +54,12 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getBySearch(@RequestParam String text) {
+    public List<ItemDto> searchByText(@RequestParam String text) {
         log.info("поиск по тексту {}", text);
-        if (text.isBlank()) {
-            log.info("IS BLAAAAAAAANK");
+        if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemService.getBySearch(text.toLowerCase());
+        return itemService.searchByText(text);
     }
 
 

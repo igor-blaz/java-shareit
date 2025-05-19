@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 public class ItemRequestService {
 
     private final ItemRequestStorage itemRequestStorage;
-    private final ItemMapper mapper;
 
 
     public ItemRequest createRequest(long id) {
