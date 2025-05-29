@@ -3,64 +3,37 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.repository.ItemRepository;
 
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ItemStorage {
-
-    Map<Long, Item> items = new HashMap<>();
+    private final ItemRepository itemRepository;
 
     public Item addItem(Item item) {
         log.info("!!!Добавили вещь {} {}", item.getId(), item);
-        item.setId(items.size());
-        items.put(item.getId(), item);
+        itemRepository.save(item);
         return item;
     }
 
 
     public Item getItem(long id) {
-        return items.get(id);
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + "не найден"));
     }
 
     public List<Item> getItemsFromUser(Long userId) {
-        log.info("все ВЕЩИ {}", items.values());
-        return items.values().stream().filter(item ->
-                Optional.ofNullable(item.getOwner())
-                        .map(User::getId)
-                        .map(id -> id.equals(userId))
-                        .orElse(false)
-        ).toList();
+        return itemRepository.findAllByOwnerId(userId);
     }
 
     public List<Item> searchByText(String text) {
 
-        List<Item> items = new ArrayList<>();
-        items.addAll(checkName(text));
-        items.addAll(checkDescription(text));
-        log.info("Все, что добавилось {}", items);
-        return items;
-    }
-
-    public List<Item> checkName(String text) {
-        log.info("VALUES!!!  {}", items.values());
-        return items.values().stream()
-                .filter(item -> item.getName() != null &&
-                        item.getName().toLowerCase().contains(text.toLowerCase()) &&
-                        item.getAvailable())
-                .toList();
-    }
-
-    public List<Item> checkDescription(String text) {
-        return items.values().stream()
-                .filter(item -> item.getDescription() != null &&
-                        item.getDescription().toLowerCase().contains(text.toLowerCase()) &&
-                        item.getAvailable())
-                .toList();
+        return itemRepository.searchByNameAndDescription(text);
     }
 
 

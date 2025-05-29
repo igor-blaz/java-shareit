@@ -27,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
-        item.setOwner(user);
+        item.setOwnerId(userId);
         itemStorage.addItem(item);
         log.info("создана вещь {}", item);
         return ItemMapper.modelToDto(item);
@@ -84,10 +84,10 @@ public class ItemServiceImpl implements ItemService {
     private void xSharerValidation(Long userId, Item item) {
         if (userId == null) {
             throw new NotFoundException("Не задан заголовок sSharer");
-        } else if (item.getOwner() == null) {
+        } else if (item.getOwnerId() == null) {
             throw new NotFoundException("Пользователь не существует ");
-        } else if (!userId.equals(item.getOwner().getId())) {
-            log.info("XSHARER{}", item.getOwner().getId());
+        } else if (!userId.equals(item.getOwnerId())) {
+            log.info("XSHARER{}", item.getOwnerId());
             log.info("old{}", userId);
 
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");

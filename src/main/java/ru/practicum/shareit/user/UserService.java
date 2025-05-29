@@ -42,7 +42,7 @@ public class UserService {
 
 
     public UserDto updateUser(long id, User enhansedUser) {
-        User user = userStorage.getUser(id);
+        User user = userStorage.getUserById(id);
         if (user == null) {
             throw new NotFoundException("User with id=" + id + " not found");
         }
@@ -66,6 +66,7 @@ public class UserService {
             return;
         }
         if (!user.getEmail().equals(enhansedUser.getEmail())) {
+
             userStorage.isUniqueEmail(enhansedUser.getEmail());
             user.setEmail(enhansedUser.getEmail());
         }
