@@ -6,15 +6,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicateEmailException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.repository.UserRepository;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-@EnableJpaRepositories(basePackages = "ru.practicum.shareit.repository")
+@EnableJpaRepositories(basePackages = "ru/practicum/shareit/user")
 
 public class UserStorage {
     private final UserRepository userRepository;

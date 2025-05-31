@@ -20,6 +20,10 @@ public class ItemMapper {
         return items.stream().map(ItemMapper::modelToDto).toList();
     }
 
+    public ItemShortDto createShortDto(Item item) {
+        return new ItemShortDto(item.getId(), item.getName());
+    }
+
     public static ItemDto modelToDto(Item item) {
         return new ItemDto(
                 item.getId(),

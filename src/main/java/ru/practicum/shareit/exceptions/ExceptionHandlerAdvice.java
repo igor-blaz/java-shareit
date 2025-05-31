@@ -14,6 +14,17 @@ public class ExceptionHandlerAdvice {
     public ErrorResponse handleValidationException(DuplicateEmailException e) {
         return new ErrorResponse(e.getMessage(), "Ошибка. Такой Email уже зарегистрирован");
     }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleTimeValidationException(TimeValidationException e) {
+        return new ErrorResponse(e.getMessage(), "Ошибка. Такой Email уже зарегистрирован");
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemUnavailableException(ItemUnavailableException e) {
+        return new ErrorResponse(e.getMessage(), "Ошибка. Такой Email уже зарегистрирован");
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

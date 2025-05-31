@@ -2,16 +2,17 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.repository.ItemRepository;
 
 import java.util.List;
 
 @Slf4j
 @Repository
 @RequiredArgsConstructor
+@EnableJpaRepositories(basePackages = "ru/practicum/shareit/item")
 public class ItemStorage {
     private final ItemRepository itemRepository;
 
