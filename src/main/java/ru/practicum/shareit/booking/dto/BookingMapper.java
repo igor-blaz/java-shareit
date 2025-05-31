@@ -7,14 +7,14 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemShortDto;
 
+import java.util.List;
+
 
 @Slf4j
 @UtilityClass
 public class BookingMapper {
     public static BookingDto modelToDto(Booking booking) {
         log.info("Маппинг Booking ->{}", booking);
-        //id=1, start=2025-06-01T16:18:07, end=2025-06-02T16:18:07, itemId=1,
-        // bookerId=2, bookingStatus=WAITING, item=null, booker=null)
         BookingDto bookingDto = new BookingDto();
         bookingDto.setId(booking.getId());
         bookingDto.setStart(booking.getStart());
@@ -29,6 +29,9 @@ public class BookingMapper {
     }
     public static BookerShortDto createShortDto(Booking booking){
         return new BookerShortDto(booking.getBookerId());
+    }
+    public List<BookingDto> listOfBookingToDto(List<Booking>bookings){
+        return bookings.stream().map(BookingMapper::modelToDto).toList();
     }
 
     public static Booking dtoToModel(BookingDto bookingDto) {

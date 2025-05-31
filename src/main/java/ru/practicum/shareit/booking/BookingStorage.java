@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.User;
+
+import java.util.List;
 
 @Slf4j
 @Repository
@@ -18,6 +21,9 @@ public class BookingStorage {
     public Booking findBookingById(long id) {
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bookind id: " + id + "не найден"));
+    }
+    public List<Booking> findAllBookingsByUserId(User user){
+        return bookingRepository.findAllByBooker(user);
     }
 
     public Booking addBooking(Booking booking) {

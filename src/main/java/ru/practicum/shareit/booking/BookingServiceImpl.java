@@ -13,6 +13,7 @@ import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,33 +27,44 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto addBooking(Booking booking, Long userId) {
         log.info("Добавление в Service {}  ", booking);
-        xSharerValidation(userId, booking);
+        xSharerValidation(userId, booking.getBookerId());
         bookingTimeValidation(booking);
         booking.setItem(itemStorage.getItem(booking.getItemId()));
         availableValidation(booking);
         booking.setBooker(userService.getUser(userId));
         log.info("Получившийся booking {}", booking);
-        return BookingMapper.modelToDto(booking);
+        return BookingMapper.modelToDto(bookingStorage.addBooking(booking));
     }
 
     @Override
-    public BookingDto getBookingDto(Long id) {
-        Booking booking = bookingStorage.findBookingById(id);
+    public BookingDto getBookingDto(Long bookingId, Long userId) {
+        Booking booking = bookingStorage.findBookingById(bookingId);
+        xSharerValidation(userId, booking.getBookerId());
+
+        log.info("&&&  {}  ", booking);
         return BookingMapper.modelToDto(booking);
     }
 
+    public List<BookingDto> getBookingDtoByUserId(Long userId) {
+        List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userService.getUser(userId));
+        return BookingMapper.listOfBookingToDto(bookings);
+    }
+
+
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
-        xSharerValidation(userId, bookingStorage.findBookingById(bookingId));
+        xSharerValidation(userId, bookingStorage.findBookingById(bookingId).getBookerId());
         Booking booking = bookingStorage.updateBookingStatus(bookingId, isApproved);
         return BookingMapper.modelToDto(booking);
     }
 
-    private void xSharerValidation(Long userId, Booking booking) {
+    private void xSharerValidation(Long userId, Long bookerId) {
         if (userId == null) {
             throw new NotFoundException("Не задан заголовок xSharer");
-        } else if (booking.getBookerId() == null) {
+        } else if (userService.getUser(userId) == null) {
             throw new NotFoundException("Пользователь не существует ");
-        } else if (!userId.equals(booking.getBookerId())) {
+        } else if (bookerId == null) {
+            throw new NotFoundException("Пользователь не существует ");
+        } else if (!userId.equals(bookerId)) {
             throw new AccessDeniedException("Этот Booking не принадлежит данному пользователю");
         }
     }

@@ -5,6 +5,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 public interface BookingService {
     BookingDto addBooking(Booking booking, Long userId);
 
-    BookingDto getBookingDto(Long id);
+    BookingDto getBookingDto(Long id, Long userId);
 
 }

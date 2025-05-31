@@ -15,7 +15,7 @@ public class ExceptionHandlerAdvice {
         return new ErrorResponse(e.getMessage(), "Ошибка. Такой Email уже зарегистрирован");
     }
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleTimeValidationException(TimeValidationException e) {
         return new ErrorResponse(e.getMessage(), "Ошибка. Такой Email уже зарегистрирован");
     }
