@@ -26,9 +26,9 @@ public class UserStorage {
         userRepository.deleteById(id);
     }
 
-    public User getUserById(long id) {
+    public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("id" + id + "не найден"));
+                .orElseThrow(() -> new NotFoundException("UserStorage. id " + id + " не найден"));
 
     }
 

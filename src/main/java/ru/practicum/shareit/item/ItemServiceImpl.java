@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -47,6 +48,10 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemStorage.getItemsFromUser(userId);
         return ItemMapper.modelArrayToDto(items);
     }
+    public ItemDto saveComment(Comment comment){
+
+    }
+
 
     @Override
     public ItemDto updateItem(Long oldItemId, Item enhansedItem, Long userId) {

@@ -3,9 +3,9 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.TimeValidationException;
@@ -26,52 +26,52 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto addBooking(Booking booking, Long userId) {
-        log.info("Добавление в Service {}  ", booking);
-        xSharerValidation(userId, booking.getBookerId());
         bookingTimeValidation(booking);
+        xSharerValidation(userId, booking);
         booking.setItem(itemStorage.getItem(booking.getItemId()));
         availableValidation(booking);
         booking.setBooker(userService.getUser(userId));
-        log.info("Получившийся booking {}", booking);
         return BookingMapper.modelToDto(bookingStorage.addBooking(booking));
     }
 
     @Override
     public BookingDto getBookingDto(Long bookingId, Long userId) {
         Booking booking = bookingStorage.findBookingById(bookingId);
-        xSharerValidation(userId, booking.getBookerId());
+        xSharerValidation(userId, booking);
 
         log.info("&&&  {}  ", booking);
         return BookingMapper.modelToDto(booking);
     }
 
     public List<BookingDto> getBookingDtoByUserId(Long userId) {
-        List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userService.getUser(userId));
+        List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userId);
         return BookingMapper.listOfBookingToDto(bookings);
     }
 
-
+    @Transactional
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
-        xSharerValidation(userId, bookingStorage.findBookingById(bookingId).getBookerId());
-        Booking booking = bookingStorage.updateBookingStatus(bookingId, isApproved);
-        return BookingMapper.modelToDto(booking);
+
+        Booking booking = bookingStorage.findBookingById(bookingId);
+
+        log.info("updateBookingStatus  {}  ", booking);
+        xSharerValidation(userId, booking);
+        return BookingMapper.modelToDto(
+                bookingStorage.updateBookingStatus(booking, isApproved));
     }
 
-    private void xSharerValidation(Long userId, Long bookerId) {
+    private void xSharerValidation(Long userId, Booking booking) {
         if (userId == null) {
             throw new NotFoundException("Не задан заголовок xSharer");
-        } else if (userService.getUser(userId) == null) {
+        } else if (booking.getBookerId() == null) {
             throw new NotFoundException("Пользователь не существует ");
-        } else if (bookerId == null) {
-            throw new NotFoundException("Пользователь не существует ");
-        } else if (!userId.equals(bookerId)) {
-            throw new AccessDeniedException("Этот Booking не принадлежит данному пользователю");
+        } else if (!userId.equals(booking.getBookerId()) && !userId.equals(booking.getItem().getOwnerId())) {
+            throw new ItemUnavailableException("ItemUnavailableException 400-xSharerValidation");
         }
     }
 
     private void availableValidation(Booking booking) {
         if (!booking.getItem().getAvailable()) {
-            throw new ItemUnavailableException("Вещь недоступна");
+            throw new ItemUnavailableException("ItemUnavailableException 400-availableValidation");
         }
     }
 
@@ -85,6 +85,8 @@ public class BookingServiceImpl implements BookingService {
                     "могут быть в одно и то же время ");
         } else if (booking.getEnd().isBefore(LocalDateTime.now())) {
             throw new TimeValidationException("Окончание бронирования не может быть в прошлом");
+        } else if (booking.getStart().isBefore(LocalDateTime.now())) {
+            throw new TimeValidationException("Начало бронирования не может быть в прошлом");
         }
     }
 

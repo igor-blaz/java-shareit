@@ -31,7 +31,12 @@ public class ItemController {
         Item item = ItemMapper.dtoToModel(itemDto);
         return itemService.addItem(item, userId);
     }
+    @PostMapping("/{itemId}/comment")
+    public ItemDto postComment(@PathVariable long itemId,
+                              @RequestHeader("X-Sharer-User-Id") Long userId) {
 
+        return itemService.updateItem(itemId, item, userId);
+    }
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable long itemId,
                               @RequestBody ItemDto itemDto,

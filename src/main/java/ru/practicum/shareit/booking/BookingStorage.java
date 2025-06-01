@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
@@ -22,8 +21,9 @@ public class BookingStorage {
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bookind id: " + id + "не найден"));
     }
-    public List<Booking> findAllBookingsByUserId(User user){
-        return bookingRepository.findAllByBooker(user);
+
+    public List<Booking> findAllBookingsByUserId(Long id) {
+        return bookingRepository.findAllByBookerId(id);
     }
 
     public Booking addBooking(Booking booking) {
@@ -32,18 +32,21 @@ public class BookingStorage {
     }
 
     @Transactional
-    public Booking updateBookingStatus(Long bookingId, boolean isApproved) {
+    public Booking updateBookingStatus(Booking booking, boolean isApproved) {
         BookingStatus bookingStatus;
         if (isApproved) {
             bookingStatus = BookingStatus.APPROVED;
         } else {
             bookingStatus = BookingStatus.REJECTED;
         }
-        int rowsChanged = bookingRepository.updateStatus(bookingId, bookingStatus);
+        int rowsChanged = bookingRepository.updateStatus(booking.getId(), bookingStatus);
         if (rowsChanged < 0) {
             throw new NotFoundException("Статус не обновлен");
+        } else{
+            log.info("Статус обновлен!!!!!!");
         }
-        return findBookingById(bookingId);
+
+        return findBookingById(booking.getId());
     }
 
 

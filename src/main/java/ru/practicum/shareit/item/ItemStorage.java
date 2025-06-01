@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 @EnableJpaRepositories(basePackages = "ru/practicum/shareit/item")
 public class ItemStorage {
     private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
+
 
     public Item addItem(Item item) {
         log.info("!!!Добавили вещь {} {}", item.getId(), item);
@@ -25,7 +28,12 @@ public class ItemStorage {
 
     public Item getItem(long id) {
         return itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + "не найден"));
+
+                .orElseThrow(() -> {
+                    log.warn("Юзер с id: {} не найден", id);
+                    return new NotFoundException("Пользователь с id: " + id + "не найден");
+                });
+
     }
 
     public List<Item> getItemsFromUser(Long userId) {
