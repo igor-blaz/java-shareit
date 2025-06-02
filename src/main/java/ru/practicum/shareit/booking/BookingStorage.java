@@ -30,7 +30,8 @@ public class BookingStorage {
         log.info("Сервис. Добавление Booking-----{}", booking);
         return bookingRepository.save(booking);
     }
-    public List<Booking> findByBookerIdAndItemId(Long bookerId, Long itemId){
+
+    public List<Booking> findByBookerIdAndItemId(Long bookerId, Long itemId) {
         return bookingRepository.findAllByBookerIdAndItemId(bookerId, itemId);
     }
 
@@ -45,7 +46,7 @@ public class BookingStorage {
         int rowsChanged = bookingRepository.updateStatus(booking.getId(), bookingStatus);
         if (rowsChanged < 0) {
             throw new NotFoundException("Статус не обновлен");
-        } else{
+        } else {
             log.info("Статус обновлен!!!!!!");
         }
 

@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -64,6 +65,7 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.createListOfCommentDto(comments);
     }
 
+    @Transactional
     public Comment saveComment(Comment comment, Long userId, Long itemId) {
 
         comment.setItemId(itemId);
@@ -71,17 +73,17 @@ public class ItemServiceImpl implements ItemService {
         comment.setCreated(LocalDateTime.now());
         comment.setAuthor(userService.getUser(userId));
         comment.setItem(itemStorage.getItem(itemId));
-        log.info("Сххраняем коммент {}", comment);
+        log.info("Сoхраняем коммент {}", comment);
         commentValidation(comment, userId, itemId);
         return itemStorage.addComment(comment);
     }
 
     public void commentValidation(Comment comment, Long userId, Long itemId) {
         List<Booking> bookings = bookingService.getBookingByBookerIdAndItemId(userId, itemId);
-        log.info("BOOKINGS  Размер{}", bookings.size());
-        if (bookings.isEmpty()) {
-            throw new ItemUnavailableException("Нет бронирований — вы не арендовали эту вещь");
-        }
+        log.info("BOOKINGS  Размер   {}", bookings.size());
+//        if (bookings.isEmpty()) {
+//            throw new ItemUnavailableException("Нет бронирований — вы не арендовали эту вещь");
+//        }
         for (Booking booking : bookings) {
             if (booking.getEnd().isAfter(LocalDateTime.now())) {
                 throw new ItemUnavailableException("Комментировать можно только после окончания аренды");
@@ -96,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
                 throw new ItemUnavailableException("Аренда не находится в статусе Одобрено");
             }
         }
+        log.info("Валидация {} прошла успешно", comment.getId());
     }
 
     @Override

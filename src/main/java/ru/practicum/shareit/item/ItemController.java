@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
+import ru.practicum.shareit.item.comment.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -36,9 +37,14 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto postComment(@PathVariable long itemId,
-                                  @RequestBody Comment comment,
+    public CommentDto postComment(@PathVariable Long itemId,
+                                  @RequestBody CommentNewDto newComment,
                                   @RequestHeader("X-Sharer-User-Id") Long userId) {
+
+        Comment comment = new Comment();
+        comment.setText(newComment.getText());
+        log.info("Комментарий {} для Item {}", comment.getId(), itemId);
+
 
         Comment commentModel = itemService.saveComment(comment, userId, itemId);
         return CommentMapper.createCommentDto(commentModel);

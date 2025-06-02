@@ -31,6 +31,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(itemStorage.getItem(booking.getItemId()));
         availableValidation(booking);
         booking.setBooker(userService.getUser(userId));
+        log.info("Booking готов {}", booking);
         return BookingMapper.modelToDto(bookingStorage.addBooking(booking));
     }
 
