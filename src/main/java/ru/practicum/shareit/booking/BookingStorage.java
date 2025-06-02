@@ -30,6 +30,9 @@ public class BookingStorage {
         log.info("Сервис. Добавление Booking-----{}", booking);
         return bookingRepository.save(booking);
     }
+    public List<Booking> findByBookerIdAndItemId(Long bookerId, Long itemId){
+        return bookingRepository.findAllByBookerIdAndItemId(bookerId, itemId);
+    }
 
     @Transactional
     public Booking updateBookingStatus(Booking booking, boolean isApproved) {

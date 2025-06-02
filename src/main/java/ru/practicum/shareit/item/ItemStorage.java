@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
 
@@ -23,6 +24,9 @@ public class ItemStorage {
         log.info("!!!Добавили вещь {} {}", item.getId(), item);
         itemRepository.save(item);
         return item;
+    }
+    public Comment addComment(Comment comment){
+        return commentRepository.save(comment);
     }
 
 

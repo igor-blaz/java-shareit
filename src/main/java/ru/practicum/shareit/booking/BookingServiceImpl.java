@@ -48,6 +48,10 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.listOfBookingToDto(bookings);
     }
 
+    public List<Booking> getBookingByBookerIdAndItemId(Long bookerId, Long itemId) {
+        return bookingStorage.findByBookerIdAndItemId(bookerId, itemId);
+    }
+
     @Transactional
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
 

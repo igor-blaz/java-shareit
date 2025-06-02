@@ -3,7 +3,11 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingServiceImpl;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exceptions.AccessDeniedException;
+import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -12,6 +16,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserService userService;
+    private final BookingServiceImpl bookingService;
 
     @Override
     public ItemDto addItem(Item item, Long userId) {
@@ -48,10 +54,40 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemStorage.getItemsFromUser(userId);
         return ItemMapper.modelArrayToDto(items);
     }
-    public ItemDto saveComment(Comment comment){
 
+    public Comment saveComment(Comment comment, Long userId, Long itemId) {
+
+        comment.setItemId(itemId);
+        comment.setAuthorId(userId);
+        comment.setCreated(LocalDateTime.now());
+        comment.setAuthor(userService.getUser(userId));
+        comment.setItem(itemStorage.getItem(itemId));
+        log.info("Сххраняем коммент {}", comment);
+        commentValidation(comment, userId, itemId);
+        return itemStorage.addComment(comment);
     }
 
+    public void commentValidation(Comment comment, Long userId, Long itemId) {
+        List<Booking> bookings = bookingService.getBookingByBookerIdAndItemId(userId, itemId);
+        log.info("BOOKINGS  Размер{}", bookings.size());
+        if (bookings.isEmpty()) {
+            throw new ItemUnavailableException("Нет бронирований — вы не арендовали эту вещь");
+        }
+        for (Booking booking : bookings) {
+            if (booking.getEnd().isAfter(LocalDateTime.now())) {
+                throw new ItemUnavailableException("Комментировать можно только после окончания аренды");
+            }
+            if (!booking.getItemId().equals(comment.getItemId())) {
+                throw new ItemUnavailableException("Пользователь не бронировал эту вещь");
+            }
+            if (!comment.getItem().getAvailable()) {
+                throw new ItemUnavailableException("Вещь недоступна");
+            }
+            if (!booking.getBookingStatus().equals(BookingStatus.APPROVED)) {
+                throw new ItemUnavailableException("Аренда не находится в статусе Одобрено");
+            }
+        }
+    }
 
     @Override
     public ItemDto updateItem(Long oldItemId, Item enhansedItem, Long userId) {
