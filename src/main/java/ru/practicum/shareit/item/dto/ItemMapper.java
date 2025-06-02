@@ -25,13 +25,14 @@ public class ItemMapper {
     }
 
     public static ItemDto modelToDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getRequestId() != null ? item.getRequestId() : null,
-                item.getOwnerId() != null ? item.getOwnerId() : null
-        );
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setRequestId(item.getRequestId());
+        itemDto.setOwnerId(item.getOwnerId());
+        return itemDto;
+
     }
 }

@@ -10,6 +10,8 @@ import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -47,12 +49,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItem(Long id) {
-        return ItemMapper.modelToDto(itemStorage.getItem(id));
+        ItemDto itemDto = ItemMapper.modelToDto(itemStorage.getItem(id));
+        itemDto.setComments(findComments(id));
+        return itemDto;
     }
 
     public List<ItemDto> getItemsFromUser(Long userId) {
         List<Item> items = itemStorage.getItemsFromUser(userId);
         return ItemMapper.modelArrayToDto(items);
+    }
+
+    public List<CommentDto> findComments(Long id) {
+        List<Comment> comments = itemStorage.getComments(id);
+        return CommentMapper.createListOfCommentDto(comments);
     }
 
     public Comment saveComment(Comment comment, Long userId, Long itemId) {
@@ -130,7 +139,6 @@ public class ItemServiceImpl implements ItemService {
         } else if (!userId.equals(item.getOwnerId())) {
             log.info("XSHARER{}", item.getOwnerId());
             log.info("old{}", userId);
-
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");
         }
     }

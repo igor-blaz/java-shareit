@@ -25,10 +25,14 @@ public class ItemStorage {
         itemRepository.save(item);
         return item;
     }
-    public Comment addComment(Comment comment){
+
+    public Comment addComment(Comment comment) {
         return commentRepository.save(comment);
     }
 
+    public List<Comment> getComments(Long id) {
+        return commentRepository.findAllByItemId(id);
+    }
 
     public Item getItem(long id) {
         return itemRepository.findById(id)
