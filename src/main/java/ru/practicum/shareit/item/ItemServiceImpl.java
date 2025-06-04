@@ -52,15 +52,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(Long id) {
+    public ItemDto getItem(Long id, Long userId) {
         List<Booking> all = bookingService.getAll();
         log.info("Тут есть все {}", all);
         ItemDto itemDto = ItemMapper.modelToDto(itemStorage.getItem(id));
         itemDto.setComments(findComments(id));
+        if(itemDto.getOwnerId().equals(userId)){
+            setLastAndNextBookingTime(id, itemDto);
+        }
+        return itemDto;
+    }
+    private void setLastAndNextBookingTime(Long id, ItemDto itemDto){
         List<BookingDto> bookings = bookingService.getBookingByItemId(id);
-
         LocalDateTime now = LocalDateTime.now();
-
+        log.info("СЕЙЧАС {},  ", now);
         Optional<BookingDto> lastBooking = bookings.stream()
                 .filter(b -> b.getEnd().isBefore(now)&& b.getStatus() == BookingStatus.APPROVED) // только завершённые
                 .max(Comparator.comparing(BookingDto::getEnd));
@@ -71,9 +76,7 @@ public class ItemServiceImpl implements ItemService {
 
         itemDto.setLastBooking(lastBooking.orElse(null));
         itemDto.setNextBooking(nextBooking.orElse(null));
-        return itemDto;
     }
-
 
     public List<ItemDto> getItemsFromUser(Long userId) {
         List<Item> items = itemStorage.getItemsFromUser(userId);
@@ -101,9 +104,6 @@ public class ItemServiceImpl implements ItemService {
     public void commentValidation(Comment comment, Long userId, Long itemId) {
         List<Booking> bookings = bookingService.getBookingByBookerIdAndItemId(userId, itemId);
         log.info("BOOKINGS  Размер   {}", bookings.size());
-//        if (bookings.isEmpty()) {
-//            throw new ItemUnavailableException("Нет бронирований — вы не арендовали эту вещь");
-//        }
         for (Booking booking : bookings) {
             if (booking.getEnd().isAfter(LocalDateTime.now())) {
                 log.info("BAD");
@@ -117,10 +117,7 @@ public class ItemServiceImpl implements ItemService {
                 log.info("BAD");
                 throw new ItemUnavailableException("Вещь недоступна");
             }
-//            if (!booking.getBookingStatus().equals(BookingStatus.APPROVED)) {
-//                log.info("BAD");
-//                throw new ItemUnavailableException("Аренда не находится в статусе Одобрено");
-//            }
+
         }
         log.info("Валидация {} прошла успешно", comment.getId());
     }

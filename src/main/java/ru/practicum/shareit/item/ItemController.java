@@ -42,6 +42,7 @@ public class ItemController {
         return itemService.getItemsFromUser(userId);
     }
 
+
     @PostMapping("/{itemId}/comment")
     public CommentDto postComment(@PathVariable Long itemId,
                                   @RequestBody CommentNewDto newComment,
@@ -64,9 +65,10 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemByUserId(@PathVariable long itemId) {
+    public ItemDto getItemByUserId(@PathVariable long itemId,
+                                   @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Зпрос на получение вещей");
-        return itemService.getItem(itemId);
+        return itemService.getItem(itemId, userId);
     }
 
     @GetMapping("/search")

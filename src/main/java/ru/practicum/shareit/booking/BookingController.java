@@ -33,7 +33,7 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllUserBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return bookingService.getBookingDtoByUserId(userId);
+        return bookingService.getBookingDtoByUserId(userId, BookingState.ALL);
     }
     @GetMapping("/{bookingId}")
     public BookingDto getBookingByBookingId(
@@ -42,10 +42,11 @@ public class BookingController {
         log.info("запрос public BookingDto getBookingByBookingId");
         return bookingService.getBookingDto(bookingId, userId);
     }
-   /* @GetMapping("/owner")
-    public List<BookingDto> getAllBookingByUserId( @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return bookingService.getBookingDtoByUserId(userId);
-    }*/
+    @GetMapping("/owner")
+    public List<BookingDto> getAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                  @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
+        return bookingService.getBookingDtoByUserId(userId, state);
+    }
 
     @PatchMapping("/{bookingId}")
     public BookingDto patchBookingStatus(

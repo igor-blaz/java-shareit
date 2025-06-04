@@ -39,34 +39,61 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingDto(Long bookingId, Long userId) {
         Booking booking = bookingStorage.findBookingById(bookingId);
         xSharerValidation(userId, booking);
-
-        log.info("&&&  {}  ", booking);
         return BookingMapper.modelToDto(booking);
     }
 
-    public BookingDto getLastBooking(Long bookingId) {
-        Booking booking = bookingStorage.findLastBooking(bookingId);
-        return booking == null ? null : BookingMapper.modelToDto(booking);
-    }
-
-    public BookingDto getNextBooking(Long bookingId) {
-        Booking booking = bookingStorage.findNextBooking(bookingId);
-        return booking == null ? null : BookingMapper.modelToDto(booking);
-    }
-
-    public List<BookingDto> getBookingDtoByUserId(Long userId) {
+    public List<BookingDto> getBookingDtoByUserId(Long userId, BookingState state) {
         List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userId);
+        List<BookingDto> bookingsDto = BookingMapper.listOfBookingToDto(bookings);
+        LocalDateTime now = LocalDateTime.now();
+        if (bookings.isEmpty()) {
+            throw new NotFoundException("У этого пользователя нет bookings");
+        }
+        switch (state) {
+            case ALL -> {
+                return bookingsDto;
+            }
+            case CURRENT -> {
+                return bookingsDto.stream()
+                        .filter(b -> b.getStart().isBefore(now) && b.getEnd().isAfter(now))
+                        .toList();
+            }
+            case PAST -> {
+                return bookingsDto.stream()
+                        .filter(b -> b.getStart().isBefore(now) && b.getEnd().isBefore(now))
+                        .toList();
+            }
+            case FUTURE -> {
+                return bookingsDto.stream()
+                        .filter(b -> b.getStart().isAfter(now))
+                        .toList();
+            }
+            case REJECTED -> {
+                return bookingsDto.stream()
+                        .filter(b -> b.getStatus().equals(BookingStatus.REJECTED))
+                        .toList();
+            }
+            case WAITING -> {
+                return bookingsDto.stream()
+                        .filter(b -> b.getStatus().equals(BookingStatus.WAITING))
+                        .toList();
+            }
+
+
+        }
         return BookingMapper.listOfBookingToDto(bookings);
     }
-    public List<Booking>getAll(){
+
+    public List<Booking> getAll() {
         return bookingStorage.findAll();
     }
 
     public List<Booking> getBookingByBookerIdAndItemId(Long bookerId, Long itemId) {
         return bookingStorage.findByBookerIdAndItemId(bookerId, itemId);
     }
-    public List<BookingDto> getBookingByItemId( Long itemId) {
-        List<Booking>bookings = bookingStorage.findBookingByItemId(itemId);
+
+    public List<BookingDto> getBookingByItemId(Long itemId) {
+        List<Booking> bookings = bookingStorage.findBookingByItemId(itemId);
         return BookingMapper.listOfBookingToDto(bookings);
     }
 
