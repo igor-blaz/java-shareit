@@ -57,21 +57,22 @@ public class ItemServiceImpl implements ItemService {
         log.info("Тут есть все {}", all);
         ItemDto itemDto = ItemMapper.modelToDto(itemStorage.getItem(id));
         itemDto.setComments(findComments(id));
-        if(itemDto.getOwnerId().equals(userId)){
+        if (itemDto.getOwnerId().equals(userId)) {
             setLastAndNextBookingTime(id, itemDto);
         }
         return itemDto;
     }
-    private void setLastAndNextBookingTime(Long id, ItemDto itemDto){
+
+    private void setLastAndNextBookingTime(Long id, ItemDto itemDto) {
         List<BookingDto> bookings = bookingService.getBookingByItemId(id);
         LocalDateTime now = LocalDateTime.now();
         log.info("СЕЙЧАС {},  ", now);
         Optional<BookingDto> lastBooking = bookings.stream()
-                .filter(b -> b.getEnd().isBefore(now)&& b.getStatus() == BookingStatus.APPROVED) // только завершённые
+                .filter(b -> b.getEnd().isBefore(now) && b.getStatus() == BookingStatus.APPROVED) // только завершённые
                 .max(Comparator.comparing(BookingDto::getEnd));
 
         Optional<BookingDto> nextBooking = bookings.stream()
-                .filter(b -> b.getStart().isAfter(now)&& b.getStatus() == BookingStatus.APPROVED) // только будущие
+                .filter(b -> b.getStart().isAfter(now) && b.getStatus() == BookingStatus.APPROVED) // только будущие
                 .min(Comparator.comparing(BookingDto::getStart));
 
         itemDto.setLastBooking(lastBooking.orElse(null));

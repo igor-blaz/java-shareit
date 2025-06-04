@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemShortDto;
 
 import java.util.List;
 
@@ -27,10 +26,12 @@ public class BookingMapper {
         log.info("Маппинг BookingDTO ->{}", bookingDto);
         return bookingDto;
     }
-    public static BookerShortDto createShortDto(Booking booking){
+
+    public static BookerShortDto createShortDto(Booking booking) {
         return new BookerShortDto(booking.getBookerId());
     }
-    public List<BookingDto> listOfBookingToDto(List<Booking>bookings){
+
+    public List<BookingDto> listOfBookingToDto(List<Booking> bookings) {
         return bookings.stream().map(BookingMapper::modelToDto).toList();
     }
 

@@ -30,11 +30,13 @@ public class BookingController {
         log.info("Запрос на добавление Booking {}", booking);
         return bookingService.addBooking(booking, userId);
     }
+
     @GetMapping
     public List<BookingDto> getAllUserBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId) {
         return bookingService.getBookingDtoByUserId(userId, BookingState.ALL);
     }
+
     @GetMapping("/{bookingId}")
     public BookingDto getBookingByBookingId(
             @PathVariable Long bookingId,
@@ -42,6 +44,7 @@ public class BookingController {
         log.info("запрос public BookingDto getBookingByBookingId");
         return bookingService.getBookingDto(bookingId, userId);
     }
+
     @GetMapping("/owner")
     public List<BookingDto> getAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                   @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {

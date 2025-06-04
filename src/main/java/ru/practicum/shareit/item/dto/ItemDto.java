@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.comment.CommentDto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

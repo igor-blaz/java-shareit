@@ -6,13 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.user.User;
 
 /**
  * TODO Sprint add-controllers.
  */
-//-- items : id , name , description , is_available , owner_id , request_id .
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -34,7 +31,5 @@ public class Item {
     private Long ownerId;
     @Column(name = "request_id")
     private Long requestId;
-
-
 
 }
