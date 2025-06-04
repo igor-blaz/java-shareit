@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -20,7 +21,9 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -50,10 +53,27 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItem(Long id) {
+        List<Booking> all = bookingService.getAll();
+        log.info("Тут есть все {}", all);
         ItemDto itemDto = ItemMapper.modelToDto(itemStorage.getItem(id));
         itemDto.setComments(findComments(id));
+        List<BookingDto> bookings = bookingService.getBookingByItemId(id);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Optional<BookingDto> lastBooking = bookings.stream()
+                .filter(b -> b.getEnd().isBefore(now)&& b.getStatus() == BookingStatus.APPROVED) // только завершённые
+                .max(Comparator.comparing(BookingDto::getEnd));
+
+        Optional<BookingDto> nextBooking = bookings.stream()
+                .filter(b -> b.getStart().isAfter(now)&& b.getStatus() == BookingStatus.APPROVED) // только будущие
+                .min(Comparator.comparing(BookingDto::getStart));
+
+        itemDto.setLastBooking(lastBooking.orElse(null));
+        itemDto.setNextBooking(nextBooking.orElse(null));
         return itemDto;
     }
+
 
     public List<ItemDto> getItemsFromUser(Long userId) {
         List<Item> items = itemStorage.getItemsFromUser(userId);
@@ -86,17 +106,21 @@ public class ItemServiceImpl implements ItemService {
 //        }
         for (Booking booking : bookings) {
             if (booking.getEnd().isAfter(LocalDateTime.now())) {
+                log.info("BAD");
                 throw new ItemUnavailableException("Комментировать можно только после окончания аренды");
             }
             if (!booking.getItemId().equals(comment.getItemId())) {
+                log.info("BAD");
                 throw new ItemUnavailableException("Пользователь не бронировал эту вещь");
             }
             if (!comment.getItem().getAvailable()) {
+                log.info("BAD");
                 throw new ItemUnavailableException("Вещь недоступна");
             }
-            if (!booking.getBookingStatus().equals(BookingStatus.APPROVED)) {
-                throw new ItemUnavailableException("Аренда не находится в статусе Одобрено");
-            }
+//            if (!booking.getBookingStatus().equals(BookingStatus.APPROVED)) {
+//                log.info("BAD");
+//                throw new ItemUnavailableException("Аренда не находится в статусе Одобрено");
+//            }
         }
         log.info("Валидация {} прошла успешно", comment.getId());
     }

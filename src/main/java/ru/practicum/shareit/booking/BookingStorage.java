@@ -3,11 +3,13 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -22,8 +24,25 @@ public class BookingStorage {
                 .orElseThrow(() -> new NotFoundException("Bookind id: " + id + "не найден"));
     }
 
+    public Booking findNextBooking(Long bookerId) {
+        List<Booking> bookings = bookingRepository
+                .findByBooker_IdAndEndIsAfter(bookerId, LocalDateTime.now(), Sort.by("start").ascending());
+        return bookings.isEmpty() ? null : bookings.getFirst();
+    }
+
+    public Booking findLastBooking(Long bookerId) {
+        List<Booking> bookings = bookingRepository
+                .findByBooker_IdAndEndIsBefore(bookerId, LocalDateTime.now(), Sort.by("start").descending());
+        return bookings.isEmpty() ? null : bookings.getFirst();
+    }
+
+
     public List<Booking> findAllBookingsByUserId(Long id) {
         return bookingRepository.findAllByBookerId(id);
+    }
+
+    public List<Booking> findAll() {
+        return bookingRepository.findAll();
     }
 
     public Booking addBooking(Booking booking) {
@@ -47,11 +66,14 @@ public class BookingStorage {
         if (rowsChanged < 0) {
             throw new NotFoundException("Статус не обновлен");
         } else {
-            log.info("Статус обновлен!!!!!!");
+            log.info("Статус обновлен!");
         }
 
         return findBookingById(booking.getId());
     }
 
+    public List<Booking> findBookingByItemId(Long id) {
+        return bookingRepository.findBookingByItemId(id);
+    }
 
 }

@@ -36,16 +36,20 @@ public class ItemController {
         return itemService.addItem(item, userId);
     }
 
+    @GetMapping
+    public List<ItemDto> getAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Зпрос на получение вещей у юзера {}", userId);
+        return itemService.getItemsFromUser(userId);
+    }
+
     @PostMapping("/{itemId}/comment")
     public CommentDto postComment(@PathVariable Long itemId,
                                   @RequestBody CommentNewDto newComment,
                                   @RequestHeader("X-Sharer-User-Id") Long userId) {
-
+        log.info("!!!!!!!!!!!!!!!!!!!COMMENT!!!!!");
         Comment comment = new Comment();
         comment.setText(newComment.getText());
-        log.info("Комментарий {} для Item {}", comment.getId(), itemId);
-
-
+        log.info("Комментарий {} для Item {}", comment, itemId);
         Comment commentModel = itemService.saveComment(comment, userId, itemId);
         return CommentMapper.createCommentDto(commentModel);
     }
@@ -63,12 +67,6 @@ public class ItemController {
     public ItemDto getItemByUserId(@PathVariable long itemId) {
         log.info("Зпрос на получение вещей");
         return itemService.getItem(itemId);
-    }
-
-    @GetMapping
-    public List<ItemDto> getAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Зпрос на получение вещей у юзера {}", userId);
-        return itemService.getItemsFromUser(userId);
     }
 
     @GetMapping("/search")

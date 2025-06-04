@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.user.User;
 
 /**
  * TODO Sprint add-controllers.
@@ -33,6 +34,7 @@ public class Item {
     private Long ownerId;
     @Column(name = "request_id")
     private Long requestId;
+
 
 
 }

@@ -27,6 +27,6 @@ public class BookingDto {
     private Long bookerId;
 
 
-    private BookerShortDto booker;     // вложенный объект
+    private BookerShortDto booker;
     private ItemShortDto item;
 }

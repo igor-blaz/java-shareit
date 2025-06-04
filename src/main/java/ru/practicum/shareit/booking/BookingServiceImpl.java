@@ -44,14 +44,32 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.modelToDto(booking);
     }
 
+    public BookingDto getLastBooking(Long bookingId) {
+        Booking booking = bookingStorage.findLastBooking(bookingId);
+        return booking == null ? null : BookingMapper.modelToDto(booking);
+    }
+
+    public BookingDto getNextBooking(Long bookingId) {
+        Booking booking = bookingStorage.findNextBooking(bookingId);
+        return booking == null ? null : BookingMapper.modelToDto(booking);
+    }
+
     public List<BookingDto> getBookingDtoByUserId(Long userId) {
         List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userId);
         return BookingMapper.listOfBookingToDto(bookings);
+    }
+    public List<Booking>getAll(){
+        return bookingStorage.findAll();
     }
 
     public List<Booking> getBookingByBookerIdAndItemId(Long bookerId, Long itemId) {
         return bookingStorage.findByBookerIdAndItemId(bookerId, itemId);
     }
+    public List<BookingDto> getBookingByItemId( Long itemId) {
+        List<Booking>bookings = bookingStorage.findBookingByItemId(itemId);
+        return BookingMapper.listOfBookingToDto(bookings);
+    }
+
 
     @Transactional
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
