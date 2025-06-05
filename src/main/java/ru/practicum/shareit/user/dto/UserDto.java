@@ -1,27 +1,18 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(of = "email")
-public class User {
-
+public class UserDto {
     private long id = 0;
-
     private String name;
-
     @NotNull
     @Email
     private String email;
-
 }
