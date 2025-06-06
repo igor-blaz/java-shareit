@@ -22,7 +22,7 @@ public class UserStorage {
         return user;
     }
 
-    public void deleteUser(long id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 

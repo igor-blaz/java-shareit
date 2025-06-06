@@ -4,7 +4,9 @@ package ru.practicum.shareit.booking.dto;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
@@ -13,40 +15,45 @@ import java.util.List;
 @UtilityClass
 public class BookingMapper {
     public static BookingDto modelToDto(Booking booking) {
-        log.info("Маппинг Booking ->{}", booking);
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setId(booking.getId());
-        bookingDto.setStart(booking.getStart());
-        bookingDto.setEnd(booking.getEnd());
-        bookingDto.setStatus(booking.getBookingStatus());
-        bookingDto.setItemId(booking.getItemId());
-        bookingDto.setBookerId(booking.getBookerId());
-        bookingDto.setBooker((createShortDto(booking)));
-        bookingDto.setItem(ItemMapper.createShortDto(booking.getItem()));
-        log.info("Маппинг BookingDTO ->{}", bookingDto);
-        return bookingDto;
+        return new BookingDto(
+                booking.getId(),
+                booking.getStart(),
+                booking.getEnd(),
+                new BookingDto.Booker(booking.getBooker().getId(), booking.getBooker().getName()),
+                new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName()),
+                booking.getBookingStatus()
+        );
     }
 
-    public static BookerShortDto createShortDto(Booking booking) {
-        return new BookerShortDto(booking.getBookerId());
-    }
 
     public List<BookingDto> listOfBookingToDto(List<Booking> bookings) {
         return bookings.stream().map(BookingMapper::modelToDto).toList();
     }
 
-    public static Booking dtoToModel(BookingDto bookingDto) {
-        // start=2025-06-01T16:12:26, end=2025-06-02T16:12:26,
-        // bookingStatus=null, itemId=1, bookerId=2, booker=null, item=null
-        log.info("маппинг MODEL -> Booking{}", bookingDto);
+    //    public static Booking dtoToModel(BookingDto bookingDto) {
+//        log.info("маппинг MODEL -> Booking{}", bookingDto);
+//        Booking booking = new Booking();
+//        booking.setStart(bookingDto.getStart());
+//        booking.setEnd(bookingDto.getEnd());
+//        booking.setBookerId(bookingDto.getBookerId());
+//        booking.setItemId(bookingDto.getItemId());
+//        log.info("маппинг результат -> Booking{}", booking);
+//        return booking;
+//    }
+    public static Booking requestDtoToModel(BookingItemRequestDto dto, Long userId) {
         Booking booking = new Booking();
-        booking.setStart(bookingDto.getStart());
-        booking.setEnd(bookingDto.getEnd());
-        booking.setBookerId(bookingDto.getBookerId());
-        booking.setItemId(bookingDto.getItemId());
-        log.info("маппинг результат -> Booking{}", booking);
-        //start=2025-06-01T16:12:26, end=2025-06-02T16:12:26,
-        // itemId=1, bookerId=2, bookingStatus=WAITING, item=null, booker=null
+        booking.setStart(dto.getStart());
+        booking.setEnd(dto.getEnd());
+        booking.setBookingStatus(BookingStatus.WAITING);
+
+        Item item = new Item();
+        item.setId(dto.getItemId());
+        booking.setItem(item);
+
+        User booker = new User();
+        booker.setId(userId);
+        booking.setBooker(booker);
+
         return booking;
     }
 

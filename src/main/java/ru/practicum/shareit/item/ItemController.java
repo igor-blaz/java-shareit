@@ -15,9 +15,6 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequestMapping("/items")

@@ -5,13 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -22,13 +20,10 @@ public class BookingController {
 
     @PostMapping
     public BookingDto addBooking(
-            @RequestBody BookingDto bookingDto,
+            @RequestBody BookingItemRequestDto bookingRequestDto,
             @Valid @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Пришел DTO {}  ", bookingDto);
-        bookingDto.setBookerId(userId);
-        Booking booking = BookingMapper.dtoToModel(bookingDto);
-        log.info("Запрос на добавление Booking {}", booking);
-        return bookingService.addBooking(booking, userId);
+        log.info("Пришел DTO {}  ", bookingRequestDto);
+        return bookingService.addBooking(bookingRequestDto, userId);
     }
 
     @GetMapping

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -25,10 +26,11 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
 
     @Override
-    public BookingDto addBooking(Booking booking, Long userId) {
+    public BookingDto addBooking(BookingItemRequestDto bookingItemRequestDto, Long userId) {
+        Booking booking = BookingMapper.requestDtoToModel(bookingItemRequestDto, userId);
         bookingTimeValidation(booking);
         xSharerValidation(userId, booking);
-        booking.setItem(itemStorage.getItem(booking.getItemId()));
+        booking.setItem(itemStorage.getItem(booking.getItem().getId()));
         availableValidation(booking);
         booking.setBooker(userService.getUser(userId));
         log.info("Booking готов {}", booking);
@@ -42,6 +44,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.modelToDto(booking);
     }
 
+    @Override
     public List<BookingDto> getBookingDtoByUserId(Long userId, BookingState state) {
         List<Booking> bookings = bookingStorage.findAllBookingsByUserId(userId);
         List<BookingDto> bookingsDto = BookingMapper.listOfBookingToDto(bookings);
@@ -84,20 +87,18 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.listOfBookingToDto(bookings);
     }
 
-    public List<Booking> getAll() {
-        return bookingStorage.findAll();
-    }
-
+    @Override
     public List<Booking> getBookingByBookerIdAndItemId(Long bookerId, Long itemId) {
         return bookingStorage.findByBookerIdAndItemId(bookerId, itemId);
     }
 
+    @Override
     public List<BookingDto> getBookingByItemId(Long itemId) {
         List<Booking> bookings = bookingStorage.findBookingByItemId(itemId);
         return BookingMapper.listOfBookingToDto(bookings);
     }
 
-
+    @Override
     @Transactional
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
 
@@ -112,9 +113,9 @@ public class BookingServiceImpl implements BookingService {
     private void xSharerValidation(Long userId, Booking booking) {
         if (userId == null) {
             throw new NotFoundException("Не задан заголовок xSharer");
-        } else if (booking.getBookerId() == null) {
+        } else if (booking.getBooker().getId() == null) {
             throw new NotFoundException("Пользователь не существует ");
-        } else if (!userId.equals(booking.getBookerId()) && !userId.equals(booking.getItem().getOwnerId())) {
+        } else if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner().getId())) {
             throw new ItemUnavailableException("ItemUnavailableException 400-xSharerValidation");
         }
     }
@@ -133,10 +134,6 @@ public class BookingServiceImpl implements BookingService {
         } else if (booking.getStart().isEqual(booking.getEnd())) {
             throw new TimeValidationException("Окончание и начало не " +
                     "могут быть в одно и то же время ");
-        } else if (booking.getEnd().isBefore(LocalDateTime.now())) {
-            throw new TimeValidationException("Окончание бронирования не может быть в прошлом");
-        } else if (booking.getStart().isBefore(LocalDateTime.now())) {
-            throw new TimeValidationException("Начало бронирования не может быть в прошлом");
         }
     }
 

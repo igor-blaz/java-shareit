@@ -1,15 +1,11 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.user.User;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -18,18 +14,18 @@ import lombok.RequiredArgsConstructor;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @NotNull
-    @NotBlank
+    private Long id;
+    @Column(name = "name", nullable = false)
     private String name;
-    @NotNull
+    @Column(name = "description", nullable = false)
     private String description;
-    @NotNull
-    @Column(name = "is_available")
+    @Column(name = "is_available", nullable = false)
     private Boolean available;
-    @Column(name = "owner_id")
-    private Long ownerId;
     @Column(name = "request_id")
     private Long requestId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
 }

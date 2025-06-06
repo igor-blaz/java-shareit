@@ -8,9 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,10 +17,10 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id = 0;
+    private Long id ;
     private String name;
-    @NotNull
     @Email
+    @Column(name = "email", nullable = false)
     private String email;
 
 }

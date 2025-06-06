@@ -5,27 +5,48 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemShortDto;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
+//@Data
+//@RequiredArgsConstructor
+//@AllArgsConstructor
+//public class BookingDto {
+//    private Long id;
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    private LocalDateTime start;
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    private LocalDateTime end;
+//    private BookingStatus status;
+//    private Long itemId;
+//    private Long bookerId;
+//
+//
+//    private BookerShortDto booker;
+//    private ItemShortDto item;
+//}
+
 @Data
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class BookingDto {
-    private Long id;
+    private final Long id;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime start;
+    private final LocalDateTime start;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime end;
-    private BookingStatus status;
-    private Long itemId;
-    private Long bookerId;
+    private final LocalDateTime end;
+    private final Booker booker;
+    private final Item item;
+    private final BookingStatus status;
 
+    @Data
+    public static class Booker {
+        private final long id;
+        private final String name;
+    }
 
-    private BookerShortDto booker;
-    private ItemShortDto item;
+    @Data
+    public static class Item {
+        private final long id;
+        private final String name;
+    }
 }

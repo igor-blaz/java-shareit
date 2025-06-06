@@ -9,9 +9,6 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RequiredArgsConstructor
 @Data
 @Entity
@@ -20,17 +17,10 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "start_booking")
-    @NotNull
+    @Column(name = "start_booking", nullable = false)
     private LocalDateTime start;
-    @Column(name = "end_booking")
-    @NotNull
+    @Column(name = "end_booking", nullable = false)
     private LocalDateTime end;
-    @Column(name = "item_id")
-    private Long itemId;
-    @Column(name = "booker_id")
-    @NotNull
-    private Long bookerId;
     @Column(name = "bookingStatus")
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus = BookingStatus.WAITING;

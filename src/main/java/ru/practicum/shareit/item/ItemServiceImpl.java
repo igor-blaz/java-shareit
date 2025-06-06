@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
-        item.setOwnerId(userId);
+        item.setOwner(user);
         itemStorage.addItem(item);
         log.info("создана вещь {}", item);
         return ItemMapper.modelToDto(item);
@@ -53,8 +53,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItem(Long id, Long userId) {
-        List<Booking> all = bookingService.getAll();
-        log.info("Тут есть все {}", all);
+
         ItemDto itemDto = ItemMapper.modelToDto(itemStorage.getItem(id));
         itemDto.setComments(findComments(id));
         if (itemDto.getOwnerId().equals(userId)) {
@@ -110,7 +109,7 @@ public class ItemServiceImpl implements ItemService {
                 log.info("BAD");
                 throw new ItemUnavailableException("Комментировать можно только после окончания аренды");
             }
-            if (!booking.getItemId().equals(comment.getItemId())) {
+            if (!booking.getItem().getId().equals(comment.getItemId())) {
                 log.info("BAD");
                 throw new ItemUnavailableException("Пользователь не бронировал эту вещь");
             }
@@ -159,11 +158,9 @@ public class ItemServiceImpl implements ItemService {
     private void xSharerValidation(Long userId, Item item) {
         if (userId == null) {
             throw new NotFoundException("Не задан заголовок sSharer");
-        } else if (item.getOwnerId() == null) {
+        } else if (item.getOwner().getId() == null) {
             throw new NotFoundException("Пользователь не существует ");
-        } else if (!userId.equals(item.getOwnerId())) {
-            log.info("XSHARER{}", item.getOwnerId());
-            log.info("old{}", userId);
+        } else if (!userId.equals(item.getOwner().getId())) {
             throw new AccessDeniedException("Эта Item не принадлежит данному пользователю");
         }
     }

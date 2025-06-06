@@ -10,9 +10,6 @@ import ru.practicum.shareit.item.comment.CommentDto;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor

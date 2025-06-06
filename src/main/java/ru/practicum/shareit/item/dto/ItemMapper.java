@@ -20,9 +20,7 @@ public class ItemMapper {
         return items.stream().map(ItemMapper::modelToDto).toList();
     }
 
-    public ItemShortDto createShortDto(Item item) {
-        return new ItemShortDto(item.getId(), item.getName());
-    }
+
 
     public static ItemDto modelToDto(Item item) {
         ItemDto itemDto = new ItemDto();
@@ -31,7 +29,7 @@ public class ItemMapper {
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
         itemDto.setRequestId(item.getRequestId());
-        itemDto.setOwnerId(item.getOwnerId());
+        itemDto.setOwnerId(item.getOwner().getId());
         return itemDto;
 
     }
