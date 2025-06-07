@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.BookingItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.TimeValidationException;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.UserService;
 
@@ -28,7 +27,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto addBooking(BookingItemRequestDto bookingItemRequestDto, Long userId) {
         Booking booking = BookingMapper.requestDtoToModel(bookingItemRequestDto, userId);
-        bookingTimeValidation(booking);
         xSharerValidation(userId, booking);
         booking.setItem(itemStorage.getItem(booking.getItem().getId()));
         availableValidation(booking);
@@ -101,9 +99,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto updateBookingStatus(Long bookingId, boolean isApproved, Long userId) {
-
         Booking booking = bookingStorage.findBookingById(bookingId);
-
         log.info("updateBookingStatus  {}  ", booking);
         xSharerValidation(userId, booking);
         return BookingMapper.modelToDto(
@@ -125,17 +121,5 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemUnavailableException("ItemUnavailableException 400-availableValidation");
         }
     }
-
-    private void bookingTimeValidation(Booking booking) {
-        if (booking.getStart().isAfter(booking.getEnd())) {
-            throw new TimeValidationException("Начало бронирования позже окончания");
-        } else if (booking.getEnd().isBefore(booking.getStart())) {
-            throw new TimeValidationException("Окончание бронирования раньше начала");
-        } else if (booking.getStart().isEqual(booking.getEnd())) {
-            throw new TimeValidationException("Окончание и начало не " +
-                    "могут быть в одно и то же время ");
-        }
-    }
-
 
 }

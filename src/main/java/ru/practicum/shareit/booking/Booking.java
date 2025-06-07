@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -9,6 +8,7 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
+@ValidBookingTime
 @RequiredArgsConstructor
 @Data
 @Entity
@@ -26,11 +26,11 @@ public class Booking {
     private BookingStatus bookingStatus = BookingStatus.WAITING;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id", insertable = false, updatable = false)
+    @JoinColumn(name = "item_id")
     private Item item;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "booker_id", insertable = false, updatable = false)
+    @JoinColumn(name = "booker_id")
     private User booker;
 
 

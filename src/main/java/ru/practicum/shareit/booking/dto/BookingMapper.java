@@ -30,16 +30,6 @@ public class BookingMapper {
         return bookings.stream().map(BookingMapper::modelToDto).toList();
     }
 
-    //    public static Booking dtoToModel(BookingDto bookingDto) {
-//        log.info("маппинг MODEL -> Booking{}", bookingDto);
-//        Booking booking = new Booking();
-//        booking.setStart(bookingDto.getStart());
-//        booking.setEnd(bookingDto.getEnd());
-//        booking.setBookerId(bookingDto.getBookerId());
-//        booking.setItemId(bookingDto.getItemId());
-//        log.info("маппинг результат -> Booking{}", booking);
-//        return booking;
-//    }
     public static Booking requestDtoToModel(BookingItemRequestDto dto, Long userId) {
         Booking booking = new Booking();
         booking.setStart(dto.getStart());
