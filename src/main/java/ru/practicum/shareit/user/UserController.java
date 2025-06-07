@@ -6,10 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserRequestDto;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -18,10 +16,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
-        User user = UserMapper.userDtoConverter(userDto);
-        log.info("Запрос на добавление User {}", user);
-        return userService.addUser(user);
+    public UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        log.info("Запрос на добавление User {}", userRequestDto);
+        return userService.addUser(userRequestDto);
     }
 
     @GetMapping("/{userId}")
