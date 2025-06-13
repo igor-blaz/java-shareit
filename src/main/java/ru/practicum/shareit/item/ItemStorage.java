@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -25,6 +26,10 @@ public class ItemStorage {
         itemRepository.save(item);
         return item;
     }
+    public List<Item> getItemByRequestId(Long requestId){
+        return itemRepository.findAllByRequestId(requestId);
+    }
+
 
     public Comment addComment(Comment comment) {
         return commentRepository.save(comment);

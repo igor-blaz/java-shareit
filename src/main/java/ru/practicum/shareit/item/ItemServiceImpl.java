@@ -46,6 +46,10 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.modelToDto(item);
     }
 
+    public List<ItemDto> findItemsByRequestId(Long id) {
+        return ItemMapper.modelArrayToDto(itemStorage.getItemByRequestId(id));
+    }
+
     public List<ItemDto> searchByText(String text) {
         List<Item> items = itemStorage.searchByText(text);
         return ItemMapper.modelArrayToDto(items);
