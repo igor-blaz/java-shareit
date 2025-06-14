@@ -11,6 +11,7 @@ public class ItemMapper {
     public static Item dtoToModel(ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
+        item.setRequestId(itemDto.getRequestId());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         return item;

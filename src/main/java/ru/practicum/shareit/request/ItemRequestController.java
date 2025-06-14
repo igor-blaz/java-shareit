@@ -23,8 +23,9 @@ public class ItemRequestController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @Valid @RequestBody ItemRequestDto itemRequestDto
     ) {
-        log.info("-Запрос на создание {}", itemRequestDto);
+        log.info("создание запроса {}", itemRequestDto);
         ItemRequest itemRequest = RequestMapper.createItemRequest(itemRequestDto);
+        log.info("Entity {}", itemRequest);
         return itemRequestService.saveRequest(itemRequest, userId);
     }
 
@@ -32,7 +33,6 @@ public class ItemRequestController {
     public List<ItemRequestDto> getItemRequest(
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-        //Зпросы, которые сделал этот пользователь+ ответы на них
         log.info("Запрос на получение");
         List<ItemRequest> itemRequests = itemRequestService.getRequestsByUserId(userId);
         return RequestMapper.createListOfDto(itemRequests);
@@ -43,6 +43,13 @@ public class ItemRequestController {
             @PathVariable Long requestId) {
         log.info("Поиск RequestId {}", requestId);
         return itemRequestService.getByRequestId(requestId);
+    }
+
+    @GetMapping("/all")
+    public List<ItemRequestDto> getAllNotMine(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        List<ItemRequest> requests = itemRequestService.getAllNotMine(userId);
+        return RequestMapper.createListOfDto(requests);
+
     }
 
 }

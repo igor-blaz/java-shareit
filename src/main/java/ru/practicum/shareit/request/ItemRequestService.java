@@ -22,19 +22,13 @@ public class ItemRequestService {
     private final ItemServiceImpl itemService;
 
 
-    public ItemRequest createRequest(long id) {
-        ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setId(id);
-        return itemRequest;
-    }
-
     public ItemRequestDto saveRequest(ItemRequest itemRequest, Long userId) {
         User user = userService.getUser(userId);
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
         itemRequest.setRequestor(user);
-        itemRequest.setId(userId);
+        log.info("Сохранение сущности {}  ", itemRequest);
         itemRequestStorage.saveItemRequest(itemRequest);
         return RequestMapper.createDto(itemRequest);
     }
@@ -54,16 +48,19 @@ public class ItemRequestService {
     public ItemRequestDto getByRequestId(Long requestId) {
         ItemRequest itemRequest = itemRequestStorage.getByRequestId(requestId);
         ItemRequestDto requestDto = RequestMapper.createDto(itemRequest);
-        requestDto.setItems(itemService.findItemsByRequestId(requestId));
+        requestDto.addItems(itemService.findItemsByRequestId(requestDto.getId()));
         return requestDto;
     }
 
     private void setItemDtoOnRequest(List<ItemRequestDto> itemRequests) {
         for (ItemRequestDto itemRequestDto : itemRequests) {
-            itemRequestDto.setItems(itemService.findItemsByRequestId(itemRequestDto.getId()));
+            itemRequestDto.addItems(itemService.findItemsByRequestId(itemRequestDto.getId()));
         }
 
 
+    }
+    public List<ItemRequest>getAllNotMine(Long userId){
+        return itemRequestStorage.getAllNotMine(userId);
     }
 
 }

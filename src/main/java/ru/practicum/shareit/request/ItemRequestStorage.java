@@ -32,4 +32,8 @@ public class ItemRequestStorage {
         return requestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("запроса не существует "));
     }
+
+    public List<ItemRequest> getAllNotMine(Long userId) {
+        return requestRepository.findAllByRequestorIdNot(userId);
+    }
 }
