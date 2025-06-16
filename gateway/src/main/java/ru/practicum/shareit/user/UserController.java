@@ -14,7 +14,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserClient userClient; // клиент, который посылает запросы к user-сервису
+    private final UserClient userClient; 
 
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {

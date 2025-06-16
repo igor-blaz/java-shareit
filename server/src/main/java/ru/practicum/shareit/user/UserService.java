@@ -18,9 +18,9 @@ public class UserService {
 
     public UserDto addUser(UserRequestDto userRequestDto) {
         User user = UserMapper.fromRequestDto(userRequestDto);
-        userStorage.addUser(user);
+        User savedUser = userStorage.addUser(user);
         log.info("Добавлен пользователь {}", user);
-        return UserMapper.userDtoConverter(user);
+        return UserMapper.userDtoConverter(savedUser);
     }
 
     public UserDto getUserDto(long id) {
