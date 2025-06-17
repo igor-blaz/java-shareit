@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 public interface ItemService {
     ItemDto addItem(Item item, Long userId);
 
-    ItemDto getItem(Long id);
+    ItemDto getItem(Long id, Long userId);
 
     ItemDto updateItem(Long oldItemId, Item enhansedItem, Long userId);
 }

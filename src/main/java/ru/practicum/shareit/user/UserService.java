@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserRequestDto;
 
 @Slf4j
 @Service
@@ -15,8 +16,10 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    public UserDto addUser(User user) {
+    public UserDto addUser(UserRequestDto userRequestDto) {
+        User user = UserMapper.fromRequestDto(userRequestDto);
         userStorage.addUser(user);
+        log.info("Добавлен пользователь {}", user);
         return UserMapper.userDtoConverter(user);
     }
 
@@ -42,7 +45,7 @@ public class UserService {
 
 
     public UserDto updateUser(long id, User enhansedUser) {
-        User user = userStorage.getUser(id);
+        User user = userStorage.getUserById(id);
         if (user == null) {
             throw new NotFoundException("User with id=" + id + " not found");
         }
@@ -66,6 +69,7 @@ public class UserService {
             return;
         }
         if (!user.getEmail().equals(enhansedUser.getEmail())) {
+
             userStorage.isUniqueEmail(enhansedUser.getEmail());
             user.setEmail(enhansedUser.getEmail());
         }

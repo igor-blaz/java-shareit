@@ -20,13 +20,17 @@ public class ItemMapper {
         return items.stream().map(ItemMapper::modelToDto).toList();
     }
 
+
+
     public static ItemDto modelToDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getRequest() != null ? item.getRequest().getId() : null
-        );
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setRequestId(item.getRequestId());
+        itemDto.setOwnerId(item.getOwner().getId());
+        return itemDto;
+
     }
 }
