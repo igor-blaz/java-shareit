@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.RequestMapper;
 
-import java.util.List;
+import java.util.*;
+
 
 @Slf4j
 @RestController
