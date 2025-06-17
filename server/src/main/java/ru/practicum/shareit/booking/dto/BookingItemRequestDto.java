@@ -5,7 +5,6 @@ import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingItemRequestDto {
 
-    private  long itemId;
+    private long itemId;
     @FutureOrPresent
-    private  LocalDateTime start;
+    private LocalDateTime start;
     @Future
-    private  LocalDateTime end;
+    private LocalDateTime end;
 }

@@ -39,8 +39,8 @@ public class ItemRequestService {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
         List<ItemRequest> itemRequestList = itemRequestStorage.getItemRequestByUserId(userId);
-        List<ItemRequestDto> DtoList = RequestMapper.createListOfDto(itemRequestList);
-        setItemDtoOnRequest(DtoList);
+        List<ItemRequestDto> dtoList = RequestMapper.createListOfDto(itemRequestList);
+        setItemDtoOnRequest(dtoList);
         return itemRequestList;
 
     }

@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -21,11 +21,10 @@ public class ItemStorage {
 
 
     public Item addItem(Item item) {
-        log.info("!!!Добавили вещь {} {}", item.getId(), item);
-        itemRepository.save(item);
-        return item;
+        return itemRepository.save(item);
     }
-    public List<Item> getItemByRequestId(Long requestId){
+
+    public List<Item> getItemByRequestId(Long requestId) {
         return itemRepository.findAllByRequestId(requestId);
     }
 
