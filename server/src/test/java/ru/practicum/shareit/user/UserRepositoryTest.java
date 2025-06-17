@@ -16,7 +16,7 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    void saveUser() {
+    void saveUserTest() {
         User user = new User(null, "Igor", "igor@email.com");
         User saved = userRepository.save(user);
         Optional<User> foundUser = userRepository.findById(saved.getId());
@@ -25,9 +25,8 @@ class UserRepositoryTest {
     }
 
 
-
     @Test
-    void testDeleteById() {
+    void testDeleteByIdTest() {
         User user = userRepository.save(new User(null, "Igor", "igor@email.com"));
         userRepository.deleteById(user.getId());
         Optional<User> deleted = userRepository.findById(user.getId());

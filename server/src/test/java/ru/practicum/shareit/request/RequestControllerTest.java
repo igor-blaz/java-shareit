@@ -53,7 +53,7 @@ public class RequestControllerTest {
 
     @Test
     void addItemRequestTest() throws Exception {
-       when (itemRequestService.saveRequest(any(ItemRequest.class), anyLong()))
+        when(itemRequestService.saveRequest(any(ItemRequest.class), anyLong()))
                 .thenReturn(itemRequestDto);
         mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 1L)

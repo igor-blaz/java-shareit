@@ -39,8 +39,6 @@ public class ItemControllerTest {
     private ItemServiceImpl itemService;
 
     private ItemDto itemDto;
-    private CommentDto commentDto;
-    private CommentNewDto commentNewDto;
 
     @BeforeEach
     void setUp() {
@@ -50,11 +48,11 @@ public class ItemControllerTest {
         itemDto.setDescription("isOk");
         itemDto.setAvailable(true);
 
-        commentDto = new CommentDto();
+        CommentDto commentDto = new CommentDto();
         commentDto.setId(1L);
         commentDto.setText("text");
 
-        commentNewDto = new CommentNewDto();
+        CommentNewDto commentNewDto = new CommentNewDto();
         commentNewDto.setText("text");
     }
 

@@ -3,10 +3,10 @@ package ru.practicum.shareit.request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemServiceImpl;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -29,8 +29,8 @@ public class ItemRequestService {
         }
         itemRequest.setRequestor(user);
         log.info("Сохранение сущности {}  ", itemRequest);
-        itemRequestStorage.saveItemRequest(itemRequest);
-        return RequestMapper.createDto(itemRequest);
+        ItemRequest savedRequest = itemRequestStorage.saveItemRequest(itemRequest);
+        return RequestMapper.createDto(savedRequest);
     }
 
     public List<ItemRequest> getRequestsByUserId(Long userId) {
@@ -59,7 +59,8 @@ public class ItemRequestService {
 
 
     }
-    public List<ItemRequest>getAllNotMine(Long userId){
+
+    public List<ItemRequest> getAllNotMine(Long userId) {
         return itemRequestStorage.getAllNotMine(userId);
     }
 
