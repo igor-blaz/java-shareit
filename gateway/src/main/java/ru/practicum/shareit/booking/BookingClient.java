@@ -14,6 +14,7 @@ import ru.practicum.shareit.client.BaseClient;
 import java.util.Map;
 
 @Service
+
 public class BookingClient extends BaseClient {
     private static final String API_PREFIX = "/bookings";
 
@@ -26,9 +27,7 @@ public class BookingClient extends BaseClient {
                         .build()
         );
     }
-    // 1. Запрос приходит на контроллер и валидируется
-    // 2. Данные из контроллера идут в Booking Client (там собирается ссылка для service)
-    // 3. Через базовый клиент мы отправляем данные в service
+
 
     public ResponseEntity<Object> getBookings(long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
@@ -60,7 +59,6 @@ public class BookingClient extends BaseClient {
         Map<String, Object> parameters = Map.of("approved", approved);
         return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
     }
-
 
 
 }
