@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.instancio.Instancio;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,10 +14,12 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +37,65 @@ class BookingServiceTest {
 
     @InjectMocks
     private BookingServiceImpl bookingService;
+
+    private List<Booking> bookingList;
+    private BookingState bookingState;
+    private Booking booking;
+    private LocalDateTime now;
+    private User defaultUser;
+    private Booking waitingBooking;
+    private Booking rejectedBooking;
+
+
+    @BeforeEach
+    void setUp() {
+        bookingList = Instancio.ofList(Booking.class)
+                .size(10).create();
+        booking = Instancio.create(Booking.class);
+        now = LocalDateTime.now();
+        defaultUser = Instancio.create(User.class);
+        waitingBooking = Instancio.create(Booking.class);
+        waitingBooking.setBookingStatus(BookingStatus.WAITING);
+        rejectedBooking = Instancio.create(Booking.class);
+        rejectedBooking.setBookingStatus(BookingStatus.REJECTED);
+    }
+
+    @Test
+    void updateBookingStatusTest() {
+        Long userId = 1L;
+        Long ownerId = 2L;
+        Long bookingId = 10L;
+
+        Item item = new Item();
+        item.setId(100L);
+        item.setOwner(new User(ownerId, "Owner", "owner@mail.ru"));
+
+        User booker = new User(userId, "User", "user@mail.ru");
+
+        Booking booking = new Booking();
+        booking.setId(bookingId);
+        booking.setBooker(booker);
+        booking.setItem(item);
+        booking.setBookingStatus(BookingStatus.WAITING);
+
+        Booking updatedBooking = new Booking();
+        updatedBooking.setId(bookingId);
+        updatedBooking.setBooker(booker);
+        updatedBooking.setItem(item);
+        updatedBooking.setBookingStatus(BookingStatus.APPROVED);
+
+        when(bookingStorage.findBookingById(bookingId)).thenReturn(booking);
+        when(bookingStorage.updateBookingStatus(booking, true)).thenReturn(updatedBooking);
+
+        BookingDto result = bookingService.updateBookingStatus(bookingId, true, ownerId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(bookingId);
+        assertThat(result.getStatus()).isEqualTo(BookingStatus.APPROVED);
+
+        verify(bookingStorage).findBookingById(bookingId);
+        verify(bookingStorage).updateBookingStatus(booking, true);
+    }
 
     @Test
     void addBookingTest() {
@@ -91,12 +153,114 @@ class BookingServiceTest {
         when(bookingStorage.findAllBookingsByUserId(userId))
                 .thenReturn(List.of(currentBooking));
 
-        List<BookingDto> result = bookingService.getBookingDtoByUserId(userId, BookingState.CURRENT);
+        List<BookingDto> resultCurrent = bookingService.getBookingDtoByUserId(userId, BookingState.CURRENT);
+
+
+        assertThat(resultCurrent).hasSize(1);
+        assertThat(resultCurrent.get(0).getStart()).isBefore(now);
+        assertThat(resultCurrent.get(0).getEnd()).isAfter(now);
+
+        verify(bookingStorage).findAllBookingsByUserId(userId);
+    }
+
+    @Test
+    void getBookingDtoByUserId_FutureBookingTest() {
+
+        bookingState = BookingState.FUTURE;
+        booking.setStart(now.plusDays(100));
+        booking.setEnd(now.plusDays(200));
+        booking.setBooker(defaultUser);
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(List.of(booking));
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(defaultUser.getId(), bookingState);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getStart()).isAfter(now);
+        assertThat(result.get(0).getEnd()).isAfter(now);
+
+        verify(bookingStorage).findAllBookingsByUserId(defaultUser.getId());
+
+    }
+
+    @Test
+    void getBookingDtoByUserId_CurrentBookingTest() {
+
+        bookingState = BookingState.CURRENT;
+        booking.setStart(now.minusDays(100));
+        booking.setEnd(now.plusDays(200));
+        booking.setBooker(defaultUser);
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(List.of(booking));
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(defaultUser.getId(), bookingState);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getStart()).isBefore(now);
         assertThat(result.get(0).getEnd()).isAfter(now);
 
-        verify(bookingStorage).findAllBookingsByUserId(userId);
+        verify(bookingStorage).findAllBookingsByUserId(defaultUser.getId());
+
     }
+
+    @Test
+    void getBookingDtoByUserId_PastBookingTest() {
+
+        bookingState = BookingState.PAST;
+        booking.setStart(now.minusDays(900));
+        booking.setEnd(now.minusDays(200));
+        booking.setBooker(defaultUser);
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(List.of(booking));
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(defaultUser.getId(), bookingState);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getStart()).isBefore(now);
+        assertThat(result.get(0).getEnd()).isBefore(now);
+
+        verify(bookingStorage).findAllBookingsByUserId(defaultUser.getId());
+
+    }
+
+    @Test
+    void getBookingDtoByUserId_RejectedBookingTest() {
+
+        bookingState = BookingState.REJECTED;
+        booking.setStart(now.plusDays(100));
+        booking.setEnd(now.plusDays(800));
+        booking.setBooker(defaultUser);
+        booking.setBookingStatus(BookingStatus.REJECTED);
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking);
+        bookings.add(waitingBooking);
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(bookings);
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(defaultUser.getId(), bookingState);
+
+        assertThat(result).hasSize(1);
+        verify(bookingStorage).findAllBookingsByUserId(defaultUser.getId());
+
+    }
+
+    @Test
+    void getBookingDtoByUserId_WaitingBookingTest() {
+
+        bookingState = BookingState.WAITING;
+        booking.setStart(now.plusDays(100));
+        booking.setEnd(now.plusDays(800));
+        booking.setBooker(defaultUser);
+        booking.setBookingStatus(BookingStatus.WAITING);
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking);
+        bookings.add(rejectedBooking);
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(bookings);
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(defaultUser.getId(), bookingState);
+
+        assertThat(result).hasSize(1);
+        verify(bookingStorage).findAllBookingsByUserId(defaultUser.getId());
+
+    }
+
+    @Test
+    void getBookingDtoByUserId_AllBookingTest() {
+        bookingState = BookingState.ALL;
+        when(bookingStorage.findAllBookingsByUserId(anyLong())).thenReturn(bookingList);
+        List<BookingDto> result = bookingService.getBookingDtoByUserId(anyLong(), bookingState);
+        assertThat(result).hasSize(10);
+    }
+
 }
