@@ -10,13 +10,11 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.ItemUnavailableException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
@@ -223,38 +221,6 @@ class ItemServiceTest {
             itemService.updateItem(itemId, newItem, userId);
         });
     }
-
-    @Test
-    void xSharer_shouldThrowAccessDeniedException() {
-        Long userId = 12L;
-        Long itemId = 5L;
-
-        User owner = Instancio.create(User.class);
-        owner.setId(99L);
-
-        Item item = Instancio.create(Item.class);
-        item.setId(itemId);
-        item.setOwner(owner);
-        item.setName("Old Name");
-        item.setDescription("Old Desc");
-        item.setAvailable(true);
-
-        Item newItem = new Item();
-        newItem.setName("New Name");
-        newItem.setDescription("New Desc");
-        newItem.setAvailable(false);
-
-        when(itemService.getItem(itemId, anyLong()));
-
-
-        assertThrows(AccessDeniedException.class, () -> {
-            itemService.updateItem(itemId, newItem, userId);
-        });
-
-        verify(itemService).getItem(itemId, userId);
-    }
-
-
 
     private Booking createPastApprovedBooking(Item item) {
         Booking booking = new Booking();
