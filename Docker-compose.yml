@@ -19,8 +19,8 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/
-      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
 
   db:
@@ -30,7 +30,7 @@ services:
       - "6541:5432"
     environment:
       - POSTGRES_PASSWORD=shareit
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=shareit
       - POSTGRES_DB=shareit
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
