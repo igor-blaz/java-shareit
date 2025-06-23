@@ -21,7 +21,7 @@ public class Booking {
     private LocalDateTime start;
     @Column(name = "end_booking", nullable = false)
     private LocalDateTime end;
-    @Column(name = "bookingStatus")
+    @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus = BookingStatus.WAITING;
 
