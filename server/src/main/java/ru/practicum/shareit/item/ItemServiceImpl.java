@@ -102,6 +102,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(itemStorage.getItem(itemId));
         log.info("Сoхраняем коммент {}", comment);
         commentValidation(comment, userId, itemId);
+
         return itemStorage.addComment(comment);
     }
 
@@ -121,6 +122,7 @@ public class ItemServiceImpl implements ItemService {
                 log.info("BAD");
                 throw new ItemUnavailableException("Вещь недоступна");
             }
+
 
         }
         log.info("Валидация {} прошла успешно", comment.getId());
